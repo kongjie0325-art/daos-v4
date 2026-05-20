@@ -1,0 +1,25 @@
+# audit-recorder — DAOS v4 Audit Plane (Black Box Recorder)
+# Structured JSONL with hash chain for replay integrity.
+
+version: "4.0.0"
+
+storage_path: "/data/audit"
+file_format: "jsonl"
+rotation_size_mb: 50
+compression: "gzip"
+
+chain:
+  enabled: true
+  hash_algorithm: "sha256"
+  previous_hash_field: "prev_hash"
+  store_path: "/data/audit/chain.json"
+
+fields_required:
+  - intent_id
+  - timestamp
+  - actor
+  - action
+  - outcome         # pass | fail | rollback
+  - rollback_used
+  - policy_results
+  - prev_hash

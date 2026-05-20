@@ -1,0 +1,60 @@
+# DAOS v4 — Node Baseline
+# Source of Truth: This file is the SINGLE source of truth for node inventory.
+# Any change MUST go through GitOps PR workflow.
+
+version: "4.0.0"
+signed_by: "kongjie0325-art"
+signature_hash: ""  # TODO: gpg sign after initial commit
+
+nodes:
+  - hostname: "control-01"
+    role: "control-plane"
+    ipv4: "10.0.0.10"
+    region: "us-west"
+    provider: "oracle-arm"
+    allowed_actions:
+      - "observe"
+      - "simulate"
+      - "compile"
+      - "audit"
+    disallowed_actions:
+      - "nftables_modify"
+      - "route_modify"
+    trust_score: 0.95
+
+  - hostname: "compute-01"
+    role: "execution-plane"
+    ipv4: "10.0.0.20"
+    region: "us-west"
+    provider: "oracle-arm"
+    allowed_actions:
+      - "observe"
+      - "execute"
+    disallowed_actions:
+      - "baseline_modify"
+      - "policy_modify"
+    trust_score: 0.85
+
+  - hostname: "storage-01"
+    role: "data-plane"
+    ipv4: "10.0.0.30"
+    region: "us-east"
+    provider: "baremetal"
+    allowed_actions:
+      - "observe"
+      - "store_evidence"
+    disallowed_actions:
+      - "execute"
+      - "modify_baseline"
+    trust_score: 0.90
+
+network_zones:
+  - name: "trusted"
+    cidr: ["10.0.0.0/24", "172.16.0.0/24"]
+    allow: ["observe", "simulate"]
+  - name: "sandbox"
+    cidr: ["10.255.0.0/16"]
+    allow: ["execute"]
+  - name: "quarantine"
+    cidr: ["10.254.0.0/16"]
+    allow: []

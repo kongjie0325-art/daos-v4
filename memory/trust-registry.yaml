@@ -1,0 +1,26 @@
+# trust-registry — DAOS v4 Multi-dimensional Trust Matrix
+
+version: "4.0.0"
+
+engine: "postgres"
+table: "trust_registry"
+
+schema:
+  - field: "node_id"
+    type: "VARCHAR(64) PK"
+  - field: "reliability"
+    type: "FLOAT"
+  - field: "reversibility"
+    type: "FLOAT"
+  - field: "blast_radius"
+    type: "FLOAT"
+  - field: "stability"
+    type: "FLOAT"
+  - field: "hallucination_risk"
+    type: "FLOAT"
+  - field: "mean_time_to_recover_hours"
+    type: "FLOAT"
+  - field: "last_updated"
+    type: "TIMESTAMPTZ"
+  - field: "updated_by"
+    type: "VARCHAR(128)"

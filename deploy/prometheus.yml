@@ -1,0 +1,31 @@
+# Prometheus configuration for DAOS v4 monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "daos-services"
+    static_configs:
+      - targets:
+          - "drift-detector:9101"
+          - "intent-compiler:9102"
+          - "policy-gateway:9103"
+          - "simulator:9104"
+          - "executor:9105"
+          - "verifier:9106"
+          - "audit-recorder:9107"
+
+  - job_name: "opa"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["opa:8181"]
+
+  - job_name: "nats"
+    static_configs:
+      - targets: ["nats:8222"]
+
+  - job_name: "node"
+    static_configs:
+      - targets:
+          - "node-exporter:9100"

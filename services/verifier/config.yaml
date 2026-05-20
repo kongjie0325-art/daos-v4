@@ -1,0 +1,18 @@
+# verifier — DAOS v4 Post-execution Verification
+# Hard-metric acceptance testing after every change.
+
+version: "4.0.0"
+
+timeout_seconds: 30
+retries: 2
+failure_action: "trigger_rollback"
+
+checks:
+  - type: "latency"
+    expected_max_ms: 10
+  - type: "packet_loss"
+    expected_max_pct: 0.1
+  - type: "service_health"
+    expected: "up"
+  - type: "config_hash_match"
+    expected: "from_pre_snapshot"

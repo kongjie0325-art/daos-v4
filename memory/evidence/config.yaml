@@ -1,0 +1,39 @@
+# evidence-store — DAOS v4 Evidence Layer
+# Raw, immutable, append-only observation records.
+
+version: "4.0.0"
+
+engine: "postgres"
+table: "evidence"
+retention_days: 90
+
+schema:
+  - field: "id"
+    type: "UUID PK"
+  - field: "source"
+    type: "VARCHAR(128)"
+  - field: "raw_artifact_path"
+    type: "VARCHAR(512)"
+  - field: "timestamp"
+    type: "TIMESTAMPTZ"
+  - field: "metric_type"
+    type: "VARCHAR(64)"
+  - field: "value"
+    type: "JSONB"
+  - field: "verified_by"
+    type: "VARCHAR(128)"
+  - field: "verification_method"
+    type: "VARCHAR(128)"
+  - field: "retention_until"
+    type: "TIMESTAMPTZ"
+  - field: "policy_version"
+    type: "VARCHAR(32)"
+  - field: "source_hash"
+    type: "VARCHAR(64)"
+  - field: "created_by"
+    type: "VARCHAR(128)"
+  - field: "provenance"
+    type: "JSONB"
+
+write_rule: "append_only"
+requires_verification: false

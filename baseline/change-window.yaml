@@ -1,0 +1,39 @@
+# DAOS v4 — Change Window Baseline
+# Defines when automated changes are permitted.
+
+version: "4.0.0"
+
+windows:
+  - name: "standard"
+    days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    start_utc: "09:00"
+    end_utc: "17:00"
+    max_duration_minutes: 60
+    require_approval: false
+    risk_level: "low"
+
+  - name: "extended"
+    days: ["monday", "tuesday", "wednesday", "thursday"]
+    start_utc: "17:00"
+    end_utc: "21:00"
+    max_duration_minutes: 120
+    require_approval: true
+    risk_level: "medium"
+
+  - name: "emergency"
+    days: ["any"]
+    start_utc: "00:00"
+    end_utc: "23:59"
+    max_duration_minutes: 30
+    require_approval: true
+    risk_level: "critical"
+    approval_required_from: ["admin"]
+
+blackout_periods:
+  - description: "End of month freeze"
+    start: "2026-06-28T00:00:00Z"
+    end: "2026-07-02T23:59:59Z"
+    reason: "Monthly billing cycle — no changes allowed"
+
+default_max_concurrent_changes: 2
+default_cooldown_minutes: 15

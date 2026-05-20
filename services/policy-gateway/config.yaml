@@ -1,0 +1,17 @@
+# policy-gateway — DAOS v4 Safety Plane
+# OPA-backed gating layer for all intents.
+
+version: "4.0.0"
+
+opa_endpoint: "http://opa:8181"
+opa_package: "daos"
+policy_bundle_path: "/policies"
+
+check_order:
+  - "network"
+  - "execution"
+  - "trust"
+  - "limiter"
+
+failure_mode: "deny_all"
+cache_ttl_seconds: 5

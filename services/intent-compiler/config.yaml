@@ -1,0 +1,13 @@
+# intent-compiler — DAOS v4 Control Plane
+# Translates LLM suggestions into strict JSON intents.
+
+version: "4.0.0"
+
+schema: "/schemas/intent.schema.json"
+validation: "strict"
+output_subject: "daos.intent.compiled"
+
+compilation_rules:
+  - if_action_is_modify_network: "force_rollback_steps"
+  - if_action_is_execute: "force_simulation"
+  - if_risk_unknown: "default_to_high"

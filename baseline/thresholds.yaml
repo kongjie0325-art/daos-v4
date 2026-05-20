@@ -1,0 +1,41 @@
+# DAOS v4 — Network Threshold Baseline
+# All values are P95 maximums unless noted otherwise.
+
+version: "4.0.0"
+
+latency:
+  intra_region:
+    warning_ms: 5
+    critical_ms: 15
+    action: "log_and_notify"
+  inter_region:
+    warning_ms: 50
+    critical_ms: 150
+    action: "quarantine_if_sustained"
+
+packet_loss:
+  warning_pct: 0.5
+  critical_pct: 2.0
+  sustained_seconds: 30
+  action: "trigger_route_re_evaluation"
+
+throughput:
+  min_mbps: 100
+  warning_mbps: 200
+  sustained_low_seconds: 60
+
+jitter:
+  warning_ms: 10
+  critical_ms: 30
+  action: "log"
+
+connection_pool:
+  max_idle: 100
+  max_open: 200
+  max_lifetime_seconds: 300
+
+health_check:
+  interval_seconds: 15
+  timeout_seconds: 5
+  retries: 3
+  failure_threshold: 0.3  # ratio of failed checks before action

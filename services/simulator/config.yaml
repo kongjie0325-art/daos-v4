@@ -1,0 +1,15 @@
+# simulator — DAOS v4 Simulation Plane
+# Digital twin pre-flight validation.
+
+version: "4.0.0"
+
+runtime: "docker"
+network_isolation: true
+default_ttl_seconds: 300
+max_concurrent_simulations: 4
+
+verification:
+  - "intent_passes_policy"
+  - "rollback_validates"
+  - "network_reachable"
+  - "no_side_effects"

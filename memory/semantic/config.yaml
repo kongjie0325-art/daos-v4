@@ -1,0 +1,38 @@
+# semantic-store — DAOS v4 Stable Knowledge Layer
+# Multi-verified knowledge, only promoted after validation.
+
+version: "4.0.0"
+
+engine: "postgres"
+table: "semantic"
+retention: "indefinite"
+
+schema:
+  - field: "id"
+    type: "UUID PK"
+  - field: "knowledge"
+    type: "TEXT"
+  - field: "embedding"
+    type: "VECTOR(768)"
+  - field: "category"
+    type: "VARCHAR(64)"
+  - field: "last_verified_at"
+    type: "TIMESTAMPTZ"
+  - field: "support_count"
+    type: "INTEGER DEFAULT 1"
+  - field: "reject_count"
+    type: "INTEGER DEFAULT 0"
+  - field: "confidence_floor"
+    type: "FLOAT DEFAULT 0.6"
+  - field: "policy_version"
+    type: "VARCHAR(32)"
+  - field: "source_hash"
+    type: "VARCHAR(64)"
+  - field: "created_by"
+    type: "VARCHAR(128)"
+  - field: "provenance"
+    type: "JSONB"
+
+promotion_rule: "require_3_verifications"
+write_rule: "multi_verified_only"
+vector_index: "ivfflat"

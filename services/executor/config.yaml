@@ -1,0 +1,26 @@
+# executor — DAOS v4 Execution Plane (Sandbox Runner)
+# Low-risk → Docker, High-risk → Firecracker MicroVM
+
+version: "4.0.0"
+
+runtimes:
+  low_risk:
+    type: "docker"
+    network_mode: "none"
+    read_only_rootfs: true
+    default_image: "alpine:3.19"
+  high_risk:
+    type: "firecracker"
+    kernel: "/opt/firecracker/vmlinux"
+    rootfs: "/opt/firecracker/rootfs.ext4"
+    memory_mb: 256
+    vcpus: 1
+
+rollback_required: true
+pre_snapshot_required: true
+verify_after_execution: true
+
+hooks:
+  pre_execute: "/scripts/pre-hook.sh"
+  post_execute: "/scripts/post-hook.sh"
+  rollback: "/scripts/rollback-hook.sh"

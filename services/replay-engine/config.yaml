@@ -1,0 +1,14 @@
+# replay-engine — DAOS v4 Debug & Forensic Tool
+# Replays audit chain for post-mortem analysis.
+
+version: "4.0.0"
+
+source: "/data/audit"
+
+replay_modes:
+  - "full": "Replay all events in order"
+  - "filtered": "Filter by intent_id, actor, action, outcome"
+  - "timeline": "Visual timeline of events grouped by target_node"
+
+output_format: "json"
+max_events_per_replay: 10000

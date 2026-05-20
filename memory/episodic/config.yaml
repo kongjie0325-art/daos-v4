@@ -1,0 +1,35 @@
+# episodic-store — DAOS v4 Event Summary Layer
+# Low-frequency update, session-level summaries.
+
+version: "4.0.0"
+
+engine: "postgres"
+table: "episodic"
+retention_days: 30
+
+schema:
+  - field: "id"
+    type: "UUID PK"
+  - field: "session_id"
+    type: "VARCHAR(64)"
+  - field: "summary"
+    type: "TEXT"
+  - field: "start_time"
+    type: "TIMESTAMPTZ"
+  - field: "end_time"
+    type: "TIMESTAMPTZ"
+  - field: "event_count"
+    type: "INTEGER"
+  - field: "outcome"
+    type: "VARCHAR(32)"
+  - field: "policy_version"
+    type: "VARCHAR(32)"
+  - field: "source_hash"
+    type: "VARCHAR(64)"
+  - field: "created_by"
+    type: "VARCHAR(128)"
+  - field: "provenance"
+    type: "JSONB"
+
+write_rule: "low_frequency_update"
+compression: true

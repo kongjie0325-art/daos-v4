@@ -1,0 +1,233 @@
+version: "3.9"
+
+services:
+  # ─── Phase 1: Core Services ───
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: daos-pg
+    environment:
+      POSTGRES_DB: daos
+      POSTGRES_USER: daos
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-daos_secret}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: daos-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: daos-nats
+    command:
+      - "--jetstream"
+      - "--store_dir=/data"
+      - "--port=4222"
+      - "--http_port=8222"
+    volumes:
+      - natsdata:/data
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  opa:
+    image: openpolicyagent/opa:1.0.0-static
+    container_name: daos-opa
+    command:
+      - "run"
+      - "--server"
+      - "--addr=:8181"
+      - "--bundle=/policies"
+      - "--set=decision_logs.console=true"
+    volumes:
+      - ../policies:/policies:ro
+      - ../baseline:/baseline:ro
+    ports:
+      - "8181:8181"
+    healthcheck:
+      test: ["CMD", "opa", "version"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  # ─── Phase 2: DAOS Core Services ───
+  drift-detector:
+    build: ../services/drift-detector
+    container_name: daos-drift-detector
+    volumes:
+      - ../services/drift-detector:/app:ro
+      - ../baseline:/baseline:ro
+    environment:
+      NATS_URL: nats://nats:4222
+      PROMETHEUS_URL: ${PROMETHEUS_URL:-http://prometheus:9090}
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  intent-compiler:
+    build: ../services/intent-compiler
+    container_name: daos-intent-compiler
+    volumes:
+      - ../services/intent-compiler:/app:ro
+      - ../schemas:/schemas:ro
+    environment:
+      NATS_URL: nats://nats:4222
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  policy-gateway:
+    build: ../services/policy-gateway
+    container_name: daos-policy-gateway
+    environment:
+      OPA_URL: http://opa:8181
+      NATS_URL: nats://nats:4222
+    depends_on:
+      opa:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  simulator:
+    build: ../services/simulator
+    container_name: daos-simulator
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      NATS_URL: nats://nats:4222
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  executor:
+    build: ../services/executor
+    container_name: daos-executor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ../rollback:/rollback:ro
+    environment:
+      NATS_URL: nats://nats:4222
+      FIRECRACKER_SOCKET: /tmp/firecracker.sock
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  verifier:
+    build: ../services/verifier
+    container_name: daos-verifier
+    environment:
+      NATS_URL: nats://nats:4222
+    depends_on:
+      nats:
+        condition: service_healthy
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  audit-recorder:
+    build: ../services/audit-recorder
+    container_name: daos-audit-recorder
+    volumes:
+      - auditdata:/data
+    environment:
+      NATS_URL: nats://nats:4222
+      PG_URL: postgres://daos:${PG_PASSWORD:-daos_secret}@postgres:5432/daos
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  # ─── Phase 2: Observability ───
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: daos-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - promdata:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: daos-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-daos_admin}
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    volumes:
+      - grafanadata:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - daos-net
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  natsdata:
+  promdata:
+  grafanadata:
+  auditdata:
+
+networks:
+  daos-net:
+    driver: bridge

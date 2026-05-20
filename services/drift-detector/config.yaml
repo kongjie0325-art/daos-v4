@@ -1,0 +1,23 @@
+# drift-detector — DAOS v4 Observation Processor
+# Detects deviation between GitOps baseline and observed telemetry.
+
+version: "4.0.0"
+
+poll_interval_seconds: 30
+baseline_source: "git"
+telemetry_source: "prometheus"
+
+drift_thresholds:
+  latency_p95_deviation_pct: 20
+  packet_loss_absolute: 0.5
+  throughput_drop_pct: 30
+  node_unreachable_count: 2
+
+output:
+  - type: "event"        # NATS subject: daos.drift.<node>
+  - type: "evidence"     # Write raw to evidence store
+  - type: "suggestion"   # Write suggested threshold to semantic memory
+
+health_check:
+  port: 9101
+  path: "/health"
