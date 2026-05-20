@@ -1,39 +1,44 @@
-# DAOS v4 — Change Window Baseline
-# Defines when automated changes are permitted.
+# DAOS v4 — Change Window Baseline / 变更窗口基线
+# ====================================================
+# Defines when automated changes are permitted. / 定义自动化变更允许的时间窗口。
+# All times in UTC. / 所有时间为 UTC。
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
+# Change windows / 变更窗口
 windows:
-  - name: "standard"
-    days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
-    start_utc: "09:00"
-    end_utc: "17:00"
-    max_duration_minutes: 60
-    require_approval: false
-    risk_level: "low"
+  - name: "standard"               # Standard window — low-risk daily ops / 标准窗口 — 低风险日常操作
+    days: ["monday", "tuesday", "wednesday", "thursday", "friday"]  # Weekdays / 工作日
+    start_utc: "09:00"             # Start time UTC / UTC 起始时间
+    end_utc: "17:00"               # End time UTC / UTC 结束时间
+    max_duration_minutes: 60       # Maximum change duration / 单次变更最长持续时间（分钟）
+    require_approval: false        # Auto-approve / 自动批准
+    risk_level: "low"              # Risk level / 风险等级
 
-  - name: "extended"
-    days: ["monday", "tuesday", "wednesday", "thursday"]
-    start_utc: "17:00"
-    end_utc: "21:00"
-    max_duration_minutes: 120
-    require_approval: true
-    risk_level: "medium"
+  - name: "extended"               # Extended window — after-hours / 扩展窗口 — 非工作时间
+    days: ["monday", "tuesday", "wednesday", "thursday"]  # Monday-Thursday / 周一至周四
+    start_utc: "17:00"             # Start time UTC / UTC 起始时间
+    end_utc: "21:00"               # End time UTC / UTC 结束时间
+    max_duration_minutes: 120      # Maximum change duration / 单次变更最长持续时间（分钟）
+    require_approval: true         # Requires human approval / 需要人工批准
+    risk_level: "medium"           # Risk level / 风险等级
 
-  - name: "emergency"
-    days: ["any"]
-    start_utc: "00:00"
-    end_utc: "23:59"
-    max_duration_minutes: 30
-    require_approval: true
-    risk_level: "critical"
-    approval_required_from: ["admin"]
+  - name: "emergency"              # Emergency window — any day, any time / 紧急窗口 — 任何时间
+    days: ["any"]                  # Any day / 任意日期
+    start_utc: "00:00"             # Start time UTC / UTC 起始时间
+    end_utc: "23:59"               # End time UTC / UTC 结束时间
+    max_duration_minutes: 30       # Emergency changes are short / 紧急变更持续时间短（分钟）
+    require_approval: true         # Requires human approval / 需要人工批准
+    risk_level: "critical"         # Risk level / 风险等级
+    approval_required_from: ["admin"]  # Who must approve / 必须由管理员批准
 
+# Blackout periods — no changes allowed / 封禁区 — 禁止任何变更
 blackout_periods:
-  - description: "End of month freeze"
-    start: "2026-06-28T00:00:00Z"
-    end: "2026-07-02T23:59:59Z"
-    reason: "Monthly billing cycle — no changes allowed"
+  - description: "End of month freeze"  # Description / 描述
+    start: "2026-06-28T00:00:00Z"       # Start UTC / UTC 起始时间
+    end: "2026-07-02T23:59:59Z"         # End UTC / UTC 结束时间
+    reason: "Monthly billing cycle — no changes allowed"  # 月度结算周期，禁止变更
 
-default_max_concurrent_changes: 2
-default_cooldown_minutes: 15
+# Global defaults / 全局默认值
+default_max_concurrent_changes: 2    # Maximum concurrent changes / 最大并发变更数
+default_cooldown_minutes: 15         # Cooldown between changes / 变更间隔冷却时间（分钟）

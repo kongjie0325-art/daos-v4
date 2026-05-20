@@ -1,38 +1,39 @@
-# semantic-store — DAOS v4 Stable Knowledge Layer
-# Multi-verified knowledge, only promoted after validation.
+# semantic-store — DAOS v4 Stable Knowledge Layer / 稳定知识层
+# Multi-verified knowledge, only promoted after validation. / 多源验证的知识，仅经验证后提升
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
-engine: "postgres"
-table: "semantic"
-retention: "indefinite"
+engine: "postgres"             # Storage engine / 存储引擎
+table: "semantic"             # Table name / 表名
+retention: "indefinite"       # Retention: indefinite / 保留：永久
 
+# Schema definition / 架构定义
 schema:
   - field: "id"
-    type: "UUID PK"
-  - field: "knowledge"
+    type: "UUID PK"                     # Primary key / 主键
+  - field: "knowledge"                  # Knowledge content / 知识内容
     type: "TEXT"
-  - field: "embedding"
-    type: "VECTOR(768)"
-  - field: "category"
+  - field: "embedding"                  # Vector embedding / 向量嵌入
+    type: "VECTOR(768)"                 # 768-dim embedding / 768 维
+  - field: "category"                   # Knowledge category / 知识类别
     type: "VARCHAR(64)"
-  - field: "last_verified_at"
+  - field: "last_verified_at"           # Last verification time / 最后验证时间
     type: "TIMESTAMPTZ"
-  - field: "support_count"
+  - field: "support_count"              # Number of supporting evidence / 支持证据数
     type: "INTEGER DEFAULT 1"
-  - field: "reject_count"
+  - field: "reject_count"               # Number of rejecting evidence / 反对证据数
     type: "INTEGER DEFAULT 0"
-  - field: "confidence_floor"
+  - field: "confidence_floor"           # Minimum confidence / 最低置信度
     type: "FLOAT DEFAULT 0.6"
-  - field: "policy_version"
+  - field: "policy_version"             # OPA policy version / OPA 策略版本
     type: "VARCHAR(32)"
-  - field: "source_hash"
+  - field: "source_hash"                # Content hash / 内容哈希
     type: "VARCHAR(64)"
-  - field: "created_by"
+  - field: "created_by"                 # Creator / 创建者
     type: "VARCHAR(128)"
-  - field: "provenance"
+  - field: "provenance"                 # Provenance metadata / 出处元数据
     type: "JSONB"
 
-promotion_rule: "require_3_verifications"
-write_rule: "multi_verified_only"
-vector_index: "ivfflat"
+promotion_rule: "require_3_verifications"  # Needs 3+ verifications to promote / 需 3 次以上验证才能提升
+write_rule: "multi_verified_only"           # Only write multi-verified knowledge / 仅写入多重验证的知识
+vector_index: "ivfflat"                     # Vector index type / 向量索引类型

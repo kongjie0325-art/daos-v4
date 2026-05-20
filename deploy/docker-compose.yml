@@ -1,8 +1,9 @@
 version: "3.9"
 
 services:
-  # ─── Phase 1: Core Services ───
-  postgres:
+  # ─── Phase 1: Core Infrastructure / 核心基础设施 ───
+
+  postgres:  # PostgreSQL 16 + pgvector / 向量数据库
     image: pgvector/pgvector:pg16
     container_name: daos-pg
     environment:
@@ -23,7 +24,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  redis:
+  redis:  # In-memory cache + queue / 内存缓存与队列
     image: redis:7-alpine
     container_name: daos-redis
     command: ["redis-server", "--appendonly", "yes"]
@@ -40,7 +41,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  nats:
+  nats:  # Message bus / 消息总线 (JetStream enabled / 启用持久化)
     image: nats:2.10-alpine
     container_name: daos-nats
     command:
@@ -62,7 +63,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  opa:
+  opa:  # Open Policy Agent / 策略引擎
     image: openpolicyagent/opa:1.0.0-static
     container_name: daos-opa
     command:
@@ -85,8 +86,9 @@ services:
       - daos-net
     restart: unless-stopped
 
-  # ─── Phase 2: DAOS Core Services ───
-  drift-detector:
+  # ─── Phase 2: DAOS Core Services / DAOS 核心服务 ───
+
+  drift-detector:  # Observation: detect drift from baseline / 观测：检测基线漂移
     build: ../services/drift-detector
     container_name: daos-drift-detector
     volumes:
@@ -102,7 +104,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  intent-compiler:
+  intent-compiler:  # Control: compile intents / 控制：编译 Intent
     build: ../services/intent-compiler
     container_name: daos-intent-compiler
     volumes:
@@ -117,7 +119,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  policy-gateway:
+  policy-gateway:  # Safety: gate intents through OPA / 安全：OPA 门禁
     build: ../services/policy-gateway
     container_name: daos-policy-gateway
     environment:
@@ -132,7 +134,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  simulator:
+  simulator:  # Simulation: digital twin pre-flight / 模拟：数字孪生预飞
     build: ../services/simulator
     container_name: daos-simulator
     volumes:
@@ -146,7 +148,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  executor:
+  executor:  # Execution: sandbox runner / 执行：沙箱执行器
     build: ../services/executor
     container_name: daos-executor
     volumes:
@@ -162,7 +164,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  verifier:
+  verifier:  # Verification: post-execution checks / 验证：执行后多维度检查
     build: ../services/verifier
     container_name: daos-verifier
     environment:
@@ -174,14 +176,14 @@ services:
       - daos-net
     restart: unless-stopped
 
-  audit-recorder:
+  audit-recorder:  # Audit: immutable chain of events / 审计：不可变事件链
     build: ../services/audit-recorder
     container_name: daos-audit-recorder
     volumes:
       - auditdata:/data
     environment:
       NATS_URL: nats://nats:4222
-      PG_URL: postgres://daos:${PG_PASSWORD:-daos_secret}@postgres:5432/daos
+      PG_URL: postgres://daos:***@postgres:5432/daos
     depends_on:
       postgres:
         condition: service_healthy
@@ -191,8 +193,9 @@ services:
       - daos-net
     restart: unless-stopped
 
-  # ─── Phase 2: Observability ───
-  prometheus:
+  # ─── Phase 2: Observability / 可观测性 ───
+
+  prometheus:  # Metrics collection / 指标采集
     image: prom/prometheus:latest
     container_name: daos-prometheus
     volumes:
@@ -204,7 +207,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  grafana:
+  grafana:  # Dashboard / 仪表盘
     image: grafana/grafana:latest
     container_name: daos-grafana
     environment:
@@ -221,13 +224,13 @@ services:
     restart: unless-stopped
 
 volumes:
-  pgdata:
-  redisdata:
-  natsdata:
-  promdata:
+  pgdata:     # PostgreSQL data / 数据库持久化
+  redisdata:  # Redis data / 缓存持久化
+  natsdata:   # NATS JetStream data / 消息流持久化
+  promdata:   # Prometheus data / 指标持久化
   grafanadata:
-  auditdata:
+  auditdata:  # Audit records / 审计记录持久化
 
 networks:
   daos-net:
-    driver: bridge
+    driver: bridge  # Isolated Docker network / 隔离的 Docker 网络

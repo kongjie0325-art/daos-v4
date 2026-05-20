@@ -1,13 +1,18 @@
-# intent-compiler — DAOS v4 Control Plane
-# Translates LLM suggestions into strict JSON intents.
+# intent-compiler — DAOS v4 Control Plane / 控制平面
+# Translates LLM suggestions into strict JSON intents. / 将 LLM 建议转换为严格的 JSON Intent
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
-schema: "/schemas/intent.schema.json"
-validation: "strict"
-output_subject: "daos.intent.compiled"
+schema: "/schemas/intent.schema.json"  # Intent schema path / Intent schema 路径
+validation: "strict"                   # Validation mode: strict or relaxed / 验证模式：严格或宽松
+output_subject: "daos.intent.compiled" # NATS subject for compiled intents / 编译后 Intent 的 NATS 主题
 
+# Compilation rules / 编译规则
 compilation_rules:
-  - if_action_is_modify_network: "force_rollback_steps"
-  - if_action_is_execute: "force_simulation"
-  - if_risk_unknown: "default_to_high"
+  - if_action_is_modify_network: "force_rollback_steps"  # Network changes require rollback / 网络变更必须包含回滚
+  - if_action_is_observe: "auto_approve"                 # Observes auto-approved / 观测自动批准
+  - if_risk_is_high: "require_simulation_result"         # High risk requires simulation / 高风险需附带模拟结果
+
+health_check:
+  port: 9102            # Health check port / 健康检查端口
+  path: "/health"       # Health check path / 健康检查路径

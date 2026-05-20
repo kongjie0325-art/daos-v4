@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/kongjie0325-art/daos-v4/schemas/intent.schema.json",
-  "title": "DAOS Intent",
-  "description": "A compiled intent that has passed policy check and is ready for simulation/execution",
+  "title": "DAOS Intent / Intent 定义",
+  "description": "A compiled intent that has passed policy check and is ready for simulation/execution / 已通过策略检查、准备模拟/执行的编译后 Intent",
   "type": "object",
   "required": [
     "id", "version", "timestamp", "actor", "action", "target_node",
@@ -12,22 +12,25 @@
     "id": {
       "type": "string",
       "pattern": "^intent-[a-f0-9]{16}$",
-      "description": "Unique intent identifier"
+      "description": "Unique intent identifier / 唯一 Intent 标识符"
     },
     "version": {
       "type": "string",
-      "pattern": "^4\\.[0-9]+\\.[0-9]+$"
+      "pattern": "^4\\.[0-9]+\\.[0-9]+$",
+      "description": "Schema version / 架构版本"
     },
     "timestamp": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "Intent creation time / Intent 创建时间"
     },
     "actor": {
       "type": "string",
-      "description": "LLM or agent that proposed this intent"
+      "description": "LLM or agent that proposed this intent / 提出此 Intent 的 LLM 或代理"
     },
     "action": {
       "type": "string",
+      "description": "Action to perform / 要执行的操作",
       "enum": [
         "observe", "simulate", "execute", "modify_baseline",
         "modify_policy", "nftables_modify", "route_modify",
@@ -36,73 +39,130 @@
     },
     "target_node": {
       "type": "string",
-      "description": "Hostname matching nodes.yaml"
+      "description": "Hostname matching nodes.yaml / 匹配 nodes.yaml 的主机名"
     },
     "target_network": {
       "type": "string",
-      "format": "ipv4-cidr"
+      "format": "ipv4-cidr",
+      "description": "Target CIDR / 目标 CIDR"
     },
     "risk_level": {
       "type": "string",
-      "enum": ["low", "medium", "high", "critical"]
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Risk level / 风险等级"
     },
     "params": {
       "type": "object",
-      "description": "Action-specific parameters"
+      "description": "Action-specific parameters / 操作特定参数"
     },
     "pre_snapshot": {
       "type": "object",
+      "description": "Pre-execution snapshot for rollback / 执行前用于回滚的快照",
       "required": ["type", "path"],
       "properties": {
-        "type": { "type": "string", "enum": ["nftables", "route_table", "dns_zone", "config_file"] },
-        "path": { "type": "string" },
-        "hash": { "type": "string" }
+        "type": {
+          "type": "string",
+          "enum": ["nftables", "route_table", "dns_zone", "config_file"],
+          "description": "Snapshot type / 快照类型"
+        },
+        "path": {
+          "type": "string",
+          "description": "Snapshot storage path / 快照存储路径"
+        },
+        "hash": {
+          "type": "string",
+          "description": "Snapshot hash for integrity verification / 快照完整性哈希"
+        }
       }
     },
     "rollback_steps": {
       "type": "array",
+      "description": "Steps to rollback this intent / 回滚此 Intent 的步骤",
       "minItems": 1,
       "items": {
         "type": "object",
         "required": ["type", "command"],
         "properties": {
-          "type": { "type": "string", "enum": ["restore_snapshot", "revert_config", "restart_service", "run_command"] },
-          "command": { "type": "string" },
-          "verify_command": { "type": "string" }
+          "type": {
+            "type": "string",
+            "enum": ["restore_snapshot", "revert_config", "restart_service", "run_command"],
+            "description": "Rollback step type / 回滚步骤类型"
+          },
+          "command": {
+            "type": "string",
+            "description": "Shell command to execute / 要执行的 shell 命令"
+          },
+          "verify_command": {
+            "type": "string",
+            "description": "Command to verify rollback success / 验证回滚成功的命令"
+          }
         }
       }
     },
     "verify_steps": {
       "type": "array",
+      "description": "Metrics to verify after execution / 执行后要验证的指标",
       "items": {
         "type": "object",
         "required": ["metric", "expected", "tolerance"],
         "properties": {
-          "metric": { "type": "string" },
-          "expected": { "type": ["number", "string"] },
-          "tolerance": { "type": "number" }
+          "metric": {
+            "type": "string",
+            "description": "Metric name / 指标名称"
+          },
+          "expected": {
+            "type": ["number", "string"],
+            "description": "Expected value / 预期值"
+          },
+          "tolerance": {
+            "type": "number",
+            "description": "Acceptable tolerance / 可接受误差范围"
+          }
         }
       }
     },
     "policy_results": {
       "type": "object",
+      "description": "Results from OPA policy checks / OPA 策略检查结果",
       "properties": {
-        "network_allowed": { "type": "boolean" },
-        "execution_allowed": { "type": "boolean" },
-        "trust_verified": { "type": "boolean" },
-        "rate_limited": { "type": "boolean" }
+        "network_allowed": {
+          "type": "boolean",
+          "description": "Network policy passed / 网络策略通过"
+        },
+        "execution_allowed": {
+          "type": "boolean",
+          "description": "Execution policy passed / 执行策略通过"
+        },
+        "trust_verified": {
+          "type": "boolean",
+          "description": "Trust verification passed / 信任验证通过"
+        },
+        "rate_limited": {
+          "type": "boolean",
+          "description": "Rate limit in effect / 速率限制生效"
+        }
       }
     },
     "simulation_id": {
       "type": "string",
-      "description": "Link to simulation run if applicable"
+      "description": "Link to simulation run if applicable / 模拟运行 ID（如适用）"
     },
     "provenance": {
       "type": "object",
+      "description": "Provenance tracking fields / 来源追踪字段",
       "properties": {
-        "source_hash": { "type": "string" },
-        "policy_version": { "type": "string" },
-        "created_by": { "type": "string" }
+        "source_hash": {
+          "type": "string",
+          "description": "Hash of baseline source / 基线源哈希"
+        },
+        "policy_version": {
+          "type": "string",
+          "description": "Policy version at time of check / 检查时的策略版本"
+        },
+        "created_by": {
+          "type": "string",
+          "description": "Creator identifier / 创建者标识"
+        }
       }
     }
   }

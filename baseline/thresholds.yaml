@@ -1,41 +1,49 @@
-# DAOS v4 — Network Threshold Baseline
+# DAOS v4 — Network Threshold Baseline / 网络阈值基线
+# ====================================================
 # All values are P95 maximums unless noted otherwise.
+# 除非另有说明，所有值均为 P95 最大值。
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
+# Latency thresholds / 时延阈值
 latency:
-  intra_region:
-    warning_ms: 5
-    critical_ms: 15
-    action: "log_and_notify"
-  inter_region:
-    warning_ms: 50
-    critical_ms: 150
-    action: "quarantine_if_sustained"
+  intra_region:                    # Within same region / 同区域内
+    warning_ms: 5                  # Warning threshold in ms / 警告阈值（毫秒）
+    critical_ms: 15                # Critical threshold in ms / 严重阈值（毫秒）
+    action: "log_and_notify"       # Action on breach / 超标时的操作：记录并通知
+  inter_region:                    # Between regions / 跨区域
+    warning_ms: 50                 # Warning threshold in ms / 警告阈值（毫秒）
+    critical_ms: 150               # Critical threshold in ms / 严重阈值（毫秒）
+    action: "quarantine_if_sustained"  # Action on sustained breach / 持续超标时隔离
 
+# Packet loss thresholds / 丢包阈值
 packet_loss:
-  warning_pct: 0.5
-  critical_pct: 2.0
-  sustained_seconds: 30
-  action: "trigger_route_re_evaluation"
+  warning_pct: 0.5                 # Warning threshold in % / 警告阈值（百分比）
+  critical_pct: 2.0                # Critical threshold in % / 严重阈值（百分比）
+  sustained_seconds: 30            # Duration before triggering action / 触发动作前的持续时长（秒）
+  action: "trigger_route_re_evaluation"  # Re-evaluate routing / 重新评估路由
 
+# Throughput thresholds / 吞吐量阈值
 throughput:
-  min_mbps: 100
-  warning_mbps: 200
-  sustained_low_seconds: 60
+  min_mbps: 100                    # Minimum acceptable throughput / 最低可接受吞吐量（Mbps）
+  warning_mbps: 200                # Warning threshold / 警告阈值（Mbps）
+  sustained_low_seconds: 60        # Duration of low throughput before action / 低吞吐持续时长（秒）
 
+# Jitter thresholds / 抖动阈值
 jitter:
-  warning_ms: 10
-  critical_ms: 30
-  action: "log"
+  warning_ms: 10                   # Warning threshold in ms / 警告阈值（毫秒）
+  critical_ms: 30                  # Critical threshold in ms / 严重阈值（毫秒）
+  action: "log"                    # Action on breach / 超标时的操作：仅记录
 
+# Connection pool settings / 连接池设置
 connection_pool:
-  max_idle: 100
-  max_open: 200
-  max_lifetime_seconds: 300
+  max_idle: 100                    # Maximum idle connections / 最大空闲连接数
+  max_open: 200                    # Maximum open connections / 最大开放连接数
+  max_lifetime_seconds: 300        # Maximum connection lifetime / 连接最大存活时间（秒）
 
+# Health check configuration / 健康检查配置
 health_check:
-  interval_seconds: 15
-  timeout_seconds: 5
-  retries: 3
-  failure_threshold: 0.3  # ratio of failed checks before action
+  interval_seconds: 15             # Check interval / 检查间隔（秒）
+  timeout_seconds: 5               # Check timeout / 检查超时（秒）
+  retries: 3                       # Retry count / 重试次数
+  failure_threshold: 0.3            # Ratio of failed checks before action / 触发动作的失败比例

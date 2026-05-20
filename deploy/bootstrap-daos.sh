@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# DAOS v4 Deploy Task — 交给 Hermes AI 执行的部署任务书
-# 用法: hermes-task run deploy-daos-v4
+# DAOS v4 Deploy Task / 部署任务 — 交给 Hermes AI 执行
+# Usage / 用法: hermes-task run deploy-daos-v4
 set -euo pipefail
 
 # ============================================================
-# Phase 0: 环境准备
+# Phase 0: Environment Preparation / 环境准备
 # ============================================================
-PHASE="Phase 0 — Environment Prep"
-echo "[$PHASE] Checking prerequisites..."
+PHASE="Phase 0 — Environment Prep / 环境准备"
+echo "[$PHASE] Checking prerequisites / 检查前提条件..."
 
 command -v docker >/dev/null 2>&1 || { echo "Docker not found"; exit 1; }
 command -v git >/dev/null 2>&1 || { echo "Git not found"; exit 1; }

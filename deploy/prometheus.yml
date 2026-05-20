@@ -1,30 +1,34 @@
-# Prometheus configuration for DAOS v4 monitoring
+# Prometheus configuration for DAOS v4 monitoring / Prometheus DAOS v4 监控配置
 
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 15s       # Collect metrics every 15s / 每15秒采集指标
+  evaluation_interval: 15s   # Evaluate rules every 15s / 每15秒评估规则
 
 scrape_configs:
+  # DAOS core services / DAOS 核心服务
   - job_name: "daos-services"
     static_configs:
       - targets:
-          - "drift-detector:9101"
-          - "intent-compiler:9102"
-          - "policy-gateway:9103"
-          - "simulator:9104"
-          - "executor:9105"
-          - "verifier:9106"
-          - "audit-recorder:9107"
+          - "drift-detector:9101"   # Observation plane / 观测层
+          - "intent-compiler:9102"   # Control plane / 控制层
+          - "policy-gateway:9103"    # Safety plane / 安全层
+          - "simulator:9104"         # Simulation plane / 模拟层
+          - "executor:9105"          # Execution plane / 执行层
+          - "verifier:9106"          # Verification plane / 验证层
+          - "audit-recorder:9107"    # Audit plane / 审计层
 
+  # OPA policy engine / OPA 策略引擎
   - job_name: "opa"
     metrics_path: "/metrics"
     static_configs:
       - targets: ["opa:8181"]
 
+  # NATS message bus / NATS 消息总线
   - job_name: "nats"
     static_configs:
       - targets: ["nats:8222"]
 
+  # Node exporter (host-level metrics) / 节点导出器（主机级指标）
   - job_name: "node"
     static_configs:
       - targets:

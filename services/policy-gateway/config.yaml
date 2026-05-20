@@ -1,17 +1,18 @@
-# policy-gateway — DAOS v4 Safety Plane
-# OPA-backed gating layer for all intents.
+# policy-gateway — DAOS v4 Safety Plane / 安全层
+# OPA-backed gating layer for all intents. / 基于 OPA 的 Intent 门禁层
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
-opa_endpoint: "http://opa:8181"
-opa_package: "daos"
-policy_bundle_path: "/policies"
+opa_endpoint: "http://opa:8181"     # OPA server endpoint / OPA 服务端点
+opa_package: "daos"                  # OPA policy package / OPA 策略包
+policy_bundle_path: "/policies"      # Policy bundle path / 策略包路径
 
+# Check order — gates execute in sequence, all must pass / 检查顺序 — 按序执行，全部通过
 check_order:
-  - "network"
-  - "execution"
-  - "trust"
-  - "limiter"
+  - "network"      # Network policy / 网络策略
+  - "execution"    # Execution safety / 执行安全
+  - "trust"        # Trust verification / 信任验证
+  - "limiter"      # Rate limiter / 速率限制
 
-failure_mode: "deny_all"
-cache_ttl_seconds: 5
+failure_mode: "deny_all"   # On any error: deny / 任何错误：全部拒绝
+cache_ttl_seconds: 5       # Policy cache TTL / 策略缓存 TTL（秒）

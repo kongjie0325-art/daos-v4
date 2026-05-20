@@ -1,18 +1,19 @@
-# verifier — DAOS v4 Post-execution Verification
-# Hard-metric acceptance testing after every change.
+# verifier — DAOS v4 Post-execution Verification / 执行后验证
+# Hard-metric acceptance testing after every change. / 每次变更后的硬指标验收
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
-timeout_seconds: 30
-retries: 2
-failure_action: "trigger_rollback"
+timeout_seconds: 30           # Per-check timeout / 单次检查超时（秒）
+retries: 2                    # Retry count on failure / 失败重试次数
+failure_action: "trigger_rollback"  # On failure: rollback / 失败时：触发回滚
 
+# Verification checks / 验证检查项
 checks:
-  - type: "latency"
-    expected_max_ms: 10
-  - type: "packet_loss"
-    expected_max_pct: 0.1
-  - type: "service_health"
-    expected: "up"
-  - type: "config_hash_match"
-    expected: "from_pre_snapshot"
+  - type: "latency"                    # Latency check / 时延检查
+    expected_max_ms: 10                # Max acceptable latency / 最大可接受时延（毫秒）
+  - type: "packet_loss"                # Packet loss check / 丢包检查
+    expected_max_pct: 0.1              # Max acceptable loss / 最大可接受丢包（百分比）
+  - type: "service_health"             # Service health check / 服务健康检查
+    expected: "up"                     # Expected status / 预期状态
+  - type: "config_hash_match"          # Config integrity check / 配置完整性检查
+    expected: "from_pre_snapshot"      # Must match pre-snapshot hash / 必须匹配预快照哈希

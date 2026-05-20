@@ -1,23 +1,25 @@
-# drift-detector — DAOS v4 Observation Processor
-# Detects deviation between GitOps baseline and observed telemetry.
+# drift-detector — DAOS v4 Observation Processor / 观测处理器
+# Detects deviation between GitOps baseline and observed telemetry. / 检测 GitOps 基线与观测遥测之间的偏差
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
-poll_interval_seconds: 30
-baseline_source: "git"
-telemetry_source: "prometheus"
+poll_interval_seconds: 30         # Poll interval / 轮询间隔（秒）
+baseline_source: "git"            # Baseline source: git, file, or api / 基线源：git、file 或 api
+telemetry_source: "prometheus"    # Telemetry source / 遥测源
 
+# Drift thresholds / 漂移阈值
 drift_thresholds:
-  latency_p95_deviation_pct: 20
-  packet_loss_absolute: 0.5
-  throughput_drop_pct: 30
-  node_unreachable_count: 2
+  latency_p95_deviation_pct: 20   # P95 latency deviation % / P95 时延偏差百分比
+  packet_loss_absolute: 0.5       # Absolute packet loss % / 绝对丢包百分比
+  throughput_drop_pct: 30         # Throughput drop % / 吞吐量下降百分比
+  node_unreachable_count: 2       # Unreachable node count / 不可达节点数
 
+# Output channels / 输出通道
 output:
-  - type: "event"        # NATS subject: daos.drift.<node>
-  - type: "evidence"     # Write raw to evidence store
-  - type: "suggestion"   # Write suggested threshold to semantic memory
+  - type: "event"        # NATS subject: daos.drift.<node> / NATS 主题
+  - type: "evidence"     # Write raw to evidence store / 写入原始证据存储
+  - type: "suggestion"   # Write suggested threshold to semantic memory / 写入建议阈值到语义记忆
 
 health_check:
-  port: 9101
-  path: "/health"
+  port: 9101             # Health check port / 健康检查端口
+  path: "/health"        # Health check path / 健康检查路径

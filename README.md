@@ -2,243 +2,161 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **English** | [中文](#chinese)
+**DAOS v4** is a declarative, GitOps-driven infrastructure control plane with seven separated layers. / DAOS v4 是一个声明式、GitOps 驱动的分布式自治基础设施控制平面，采用七层分离架构。
 
 ---
 
-## <a id="english"></a> English
+## Design Philosophy / 设计哲学
 
-**DAOS v4** is a declarative, GitOps-driven infrastructure control plane with seven separated layers:
+**Static baseline = production source of truth. Dynamic suggestion = calibration layer (never directly effective).** / **静态基线 = 生产真源；动态建议 = 校准层（永不直接生效）**
 
-```
-Source of Truth → Observation → Control → Safety → Simulation → Execution → Audit
-```
-
-### Design Philosophy
-
-**Static baseline = production source of truth. Dynamic suggestion = calibration layer (never directly effective).**
-
-- **Static baseline** — auditable, rollbackable, signable. Only lives in Git.
-- **Dynamic suggestion** — observed by agents silently, outputs period distribution, avg metrics, P95/P99 deviation, anomaly clusters, suggested threshold corrections.
-- **Dynamic suggestion can NEVER override the production baseline directly.**
-
-### Seven-Layer Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  1. Source of Truth Plane                                   │
-│     GitOps Baseline + Signed Policy Bundles                │
-└─────────────────────────────────────────────────────────┬───┘
-                                                          │
-                                                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  2. Observation Plane                                       │
-│     Metrics / Logs / Traces / Snapshots / Heartbeats        │
-└─────────────────────────────────────────────────────────┬───┘
-                                                          │
-                                                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  3. Control Plane                                           │
-│     Drift Detector → DSE → LLM Co-processor → Intent Compiler│
-└─────────────────────────────────────────────────────────┬───┘
-                                                          │
-                                                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  4. Safety Plane                                            │
-│     OPA + Trust Matrix + Rate Limiter + Quarantine         │
-└─────────────────────────────────────────────────────────┬───┘
-                                                          │
-                                                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  5. Simulation Plane                                        │
-│     Digital Twin / Network Namespace / Pre-flight Validation│
-└─────────────────────────────────────────────────────────┬───┘
-                                                          │
-                                                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  6. Execution Plane                                         │
-│     Saga Coordinator + Sandbox Runner + Rollback Hooks      │
-└─────────────────────────────────────────────────────────┬───┘
-                                                          │
-                                                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│  7. Audit & Learning Plane                                  │
-│     Flight Recorder + Evidence Store + Semantic Store       │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Control Loop
-
-```
-Observe → Normalize → Drift Detect → Propose → Compile Intent
-→ Policy Check → Simulate → Execute → Verify → Record → Sleep
-```
-
-| Step | Role |
-|---|---|
-| Observe | Collect only, no reasoning |
-| Normalize | Dirty logs → structured events |
-| Drift Detect | Compute deviation from baseline |
-| Propose | LLM suggests only (never decides) |
-| Compile Intent | Strict JSON with pre_snapshot + rollback |
-| Policy Check | OPA hard deny |
-| Simulate | Digital twin pre-flight |
-| Execute | Sandbox (Docker low-risk, Firecracker high-risk) |
-| Verify | Hard-metric acceptance |
-| Record | Structured JSONL + hash chain |
-
-### Memory Architecture
-
-| Layer | Role | Write Rule |
-|---|---|---|
-| Evidence | Raw observations | Append-only, no rewrite |
-| Episodic | Event summaries | Low-frequency update |
-| Semantic | Stable knowledge | Multi-verified (≥3 confirmations) |
-| Suggested Baseline | Dynamic calibration | Never directly effective |
-
-### Execution Runtimes
-
-| Risk Level | Task | Runtime |
-|---|---|---|
-| Low | Observe, Diagnose, Read, Simulate | Docker (read-only) |
-| High | nftables, Route, DNS, Gateway changes | Firecracker MicroVM |
-
-Default: Docker. Critical changes only → MicroVM. Host never directly exposed to LLM.
-
-### Development Priority
-
-| Priority | Project |
-|---|---|
-| P0 | GitOps baseline |
-| P0 | OPA policy bundle |
-| P0 | PostgreSQL + pgvector |
-| P0 | NATS JetStream |
-| P0 | Audit recorder |
-| P1 | Drift detector |
-| P1 | Intent compiler |
-| P1 | Simulator |
-| P1 | Sandbox executor |
-| P2 | Trust registry |
-| P2 | Replay engine |
-| P3 | Automated baseline suggestion |
+- **Static baseline** — auditable, rollbackable, signable. Only lives in Git. / **静态基线** — 可审计、可回滚、可签名。仅存在于 Git 仓库中。
+- **Dynamic suggestion** — observed by agents silently, outputs period distribution, avg metrics, P95/P99 deviation, anomaly clusters, suggested threshold corrections. / **动态建议层** — 由观察代理静默生成，只输出时段分布、平均指标、P95/P99 偏差、异常簇和建议阈值修正。
+- **Dynamic suggestion can NEVER override the production baseline directly.** / **动态建议永不直接覆盖生产基线。**
 
 ---
 
-## <a id="chinese"></a> 中文
-
-**DAOS v4** 是一个声明式、GitOps 驱动的基础设施控制平面，采用七层分离架构：
-
-```
-真源 → 观察 → 控制 → 安全 → 模拟 → 执行 → 审计
-```
-
-### 设计哲学
-
-**静态基线 = 生产真源；动态建议 = 校准层（永不直接生效）**
-
-- **静态基线（Git）** — 可审计、可回滚、可签名。仅存在于 Git 仓库中。
-- **动态建议层** — 由观察代理静默生成，只输出时段分布、平均指标、P95/P99 偏差、异常簇和建议阈值修正。
-- **动态建议永不直接覆盖生产基线。**
-
-### 七层架构
+## Seven-Layer Architecture / 七层架构
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  1. 真源层 (Source of Truth)                                │
+│  1. Source of Truth Plane / 真源层                          │
+│     GitOps Baseline + Signed Policy Bundles                 │
 │     GitOps 基线 + 签名策略包                                │
 └─────────────────────────────────────────────────────────┬───┘
                                                           │
                                                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  2. 观测层 (Observation)                                    │
+│  2. Observation Plane / 观测层                              │
+│     Metrics / Logs / Traces / Snapshots / Heartbeats        │
 │     指标 / 日志 / 链路追踪 / 快照 / 心跳                     │
 └─────────────────────────────────────────────────────────┬───┘
                                                           │
                                                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  3. 控制层 (Control)                                        │
+│  3. Control Plane / 控制层                                  │
+│     Drift Detector → DSE → LLM Co-processor → Intent Compiler│
 │     漂移检测 → DSE → LLM 协处理器 → Intent 编译            │
 └─────────────────────────────────────────────────────────┬───┘
                                                           │
                                                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  4. 安全层 (Safety)                                         │
+│  4. Safety Plane / 安全层                                   │
+│     OPA + Trust Matrix + Rate Limiter + Quarantine         │
 │     OPA + 信任矩阵 + 速率限制 + 隔离区                       │
 └─────────────────────────────────────────────────────────┬───┘
                                                           │
                                                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  5. 模拟层 (Simulation)                                     │
+│  5. Simulation Plane / 模拟层                               │
+│     Digital Twin / Network Namespace / Pre-flight Validation│
 │     数字孪生 / 网络命名空间 / 预飞验证                        │
 └─────────────────────────────────────────────────────────┬───┘
                                                           │
                                                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  6. 执行层 (Execution)                                      │
+│  6. Execution Plane / 执行层                                │
+│     Saga Coordinator + Sandbox Runner + Rollback Hooks      │
 │     Saga 协调器 + 沙箱执行器 + 回滚钩子                      │
 └─────────────────────────────────────────────────────────┬───┘
                                                           │
                                                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  7. 审计与学习层 (Audit & Learning)                          │
+│  7. Audit & Learning Plane / 审计与学习层                    │
+│     Flight Recorder + Evidence Store + Semantic Store       │
 │     黑匣子 + 证据存储 + 语义存储                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 控制循环
+---
+
+## Control Loop / 控制循环
 
 ```
+Observe → Normalize → Drift Detect → Propose → Compile Intent
+→ Policy Check → Simulate → Execute → Verify → Record → Sleep
 观测 → 标准化 → 漂移检测 → 提议 → 编译 Intent
 → 策略检查 → 模拟 → 执行 → 验证 → 记录 → 休眠
 ```
 
-| 步骤 | 职责 |
+| Step / 步骤 | Role / 职责 |
 |---|---|
-| Observe | 只收集，不推理 |
-| Normalize | 脏日志 → 结构化事件 |
-| Drift Detect | 计算与基线的偏差 |
-| Propose | LLM 只提建议（不做决策） |
-| Compile Intent | 严格 JSON，含 pre_snapshot + rollback |
-| Policy Check | OPA 硬拦截 |
-| Simulate | 数字孪生预演 |
-| Execute | 沙箱执行（Docker 低风险，Firecracker 高风险）|
-| Verify | 硬指标验收 |
-| Record | 结构化 JSONL + 哈希链 |
+| Observe / 观测 | Collect only, no reasoning / 只收集，不推理 |
+| Normalize / 标准化 | Dirty logs → structured events / 脏日志 → 结构化事件 |
+| Drift Detect / 漂移检测 | Compute deviation from baseline / 计算与基线的偏差 |
+| Propose / 提议 | LLM suggests only (never decides) / LLM 只提建议（不做决策）|
+| Compile Intent / 编译 Intent | Strict JSON with pre_snapshot + rollback / 严格 JSON，含预快照 + 回滚 |
+| Policy Check / 策略检查 | OPA hard deny / OPA 硬拦截 |
+| Simulate / 模拟 | Digital twin pre-flight / 数字孪生预演 |
+| Execute / 执行 | Sandbox (Docker low-risk, Firecracker high-risk) / 沙箱执行（Docker 低风险，MicroVM 高风险）|
+| Verify / 验证 | Hard-metric acceptance / 硬指标验收 |
+| Record / 记录 | Structured JSONL + hash chain / 结构化 JSONL + 哈希链 |
 
-### 记忆架构
+---
 
-| 层级 | 角色 | 写入规则 |
+## Memory Architecture / 记忆架构
+
+| Layer / 层级 | Role / 角色 | Write Rule / 写入规则 |
 |---|---|---|
-| Evidence | 原始证据 | 只追加，不改写 |
-| Episodic | 事件摘要 | 低频更新 |
-| Semantic | 稳定知识 | 多次验证（≥3 次确认）|
-| Suggested Baseline | 动态建议 | 永不直接生效 |
+| Evidence / 证据 | Raw observations / 原始证据 | Append-only, no rewrite / 只追加，不改写 |
+| Episodic / 事件 | Event summaries / 事件摘要 | Low-frequency update / 低频更新 |
+| Semantic / 语义 | Stable knowledge / 稳定知识 | Multi-verified (≥3 confirmations) / 多次验证（≥3 次确认）|
+| Suggested Baseline / 动态建议 | Dynamic calibration / 校准层 | Never directly effective / 永不直接生效 |
 
-### 执行运行时
+**Key optimization:** Evidence is append-only (no rewrite). Semantic knowledge requires ≥3 verifications before consolidation. Suggested baseline is observed silently and never overrides production. / **关键优化：** 证据只追加不改写，语义知识需≥3次验证才能固化，动态建议静默观察永不覆盖生产。
 
-| 风险等级 | 任务 | 运行时 |
+---
+
+## Execution Runtimes / 执行运行时
+
+| Risk Level / 风险等级 | Task / 任务 | Runtime / 运行时 |
 |---|---|---|
-| 低风险 | 观测、诊断、读取、模拟 | Docker（只读） |
-| 高风险 | nftables、路由、DNS、网关变更 | Firecracker MicroVM |
+| Low / 低风险 | Observe, Diagnose, Read, Simulate / 观测、诊断、读取、模拟 | Docker (read-only) / Docker（只读）|
+| High / 高风险 | nftables, Route, DNS, Gateway changes / nftables、路由、DNS、网关变更 | Firecracker MicroVM |
 
-默认 Docker。关键变更才进 MicroVM。生产宿主机不直接暴露给 LLM。
+Default: Docker. Critical changes only → MicroVM. Host never directly exposed to LLM. / 默认 Docker。关键变更才进 MicroVM。生产宿主机不直接暴露给 LLM。
 
-### 开发优先级
+**Every executable tool must include:** / **每个可执行工具必须附带：**
+```
+pre_snapshot → execute → verify → rollback → rollback_verify
+```
 
-| 优先级 | 项目 |
+If any step is missing, the tool cannot enter the auto-execution pool. / 如果缺一个步骤，工具就不能进入自动执行池。
+
+---
+
+## Development Priority / 开发优先级
+
+| Priority / 优先级 | Project / 项目 |
 |---|---|
-| P0 | GitOps 基线 |
-| P0 | OPA 策略包 |
+| P0 | GitOps baseline / GitOps 基线 |
+| P0 | OPA policy bundle / OPA 策略包 |
 | P0 | PostgreSQL + pgvector |
 | P0 | NATS JetStream |
-| P0 | 审计记录器 |
-| P1 | 漂移检测器 |
-| P1 | Intent 编译器 |
-| P1 | 模拟器 |
-| P1 | 沙箱执行器 |
-| P2 | 信任注册表 |
-| P2 | 回放引擎 |
-| P3 | 自动基线建议 |
+| P0 | Audit recorder / 审计记录器 |
+| P1 | Drift detector / 漂移检测器 |
+| P1 | Intent compiler / Intent 编译器 |
+| P1 | Simulator / 模拟器 |
+| P1 | Sandbox executor / 沙箱执行器 |
+| P2 | Trust registry / 信任注册表 |
+| P2 | Replay engine / 回放引擎 |
+| P3 | Automated baseline suggestion / 自动基线建议 |
+
+---
+
+## Recommended Tech Stack / 推荐技术栈
+
+| Layer / 层级 | Component / 组件 | Purpose / 用途 |
+|---|---|---|
+| Message Bus / 消息总线 | NATS JetStream | Event stream, task dispatch, state notification / 事件流、任务分发、状态通知 |
+| Primary DB / 主数据库 | PostgreSQL + pgvector | Evidence, memory, state, baseline / 证据、记忆、状态、基线 |
+| Hot Cache / 热缓存 | Redis | TTL working memory, distributed locks / TTL 工作记忆、分布式锁 |
+| Policy Engine / 策略引擎 | OPA | Safety review, hard deny / 安全审查、硬拒绝 |
+| Execution Isolation / 执行隔离 | Docker + Firecracker | Sandbox & high-risk execution / 沙箱与高风险执行 |
+| Observability / 观测 | Prometheus + Blackbox Exporter | Metrics & probing / 指标与探测 |
+| Audit / 审计 | Structured JSONL + hash chain | Black box replay / 黑匣子回放 |
+
+**Not recommended for MVP:** Neo4j, Kafka, multi-vector stores, complex multi-model routers, auto-training models. / **MVP 阶段不建议上：** Neo4j、Kafka、多套向量库、复杂多模型路由器、自动训练主模型。
 
 ---
 
@@ -246,40 +164,42 @@ Default: Docker. Critical changes only → MicroVM. Host never directly exposed 
 
 ```
 daos-v4/
-├── baseline/            # GitOps Source of Truth / GitOps 真源
-│   ├── nodes.yaml       # Node inventory + network zones
-│   ├── thresholds.yaml  # Latency/throughput/packet loss thresholds
-│   └── change-window.yaml # Allowed change windows + blackout periods
-├── policies/            # OPA Rego policy bundles / OPA 策略包
-│   ├── network.rego     # Network change gate
-│   ├── execution.rego   # Execution safety gate
-│   ├── trust.rego       # Multi-dimensional trust evaluation
-│   └── limiter.rego     # Rate limiter
+├── baseline/              # GitOps Source of Truth / GitOps 真源
+│   ├── nodes.yaml         # Node inventory + network zones / 节点清单 + 网络分区
+│   ├── thresholds.yaml    # Latency/throughput/packet loss thresholds / 时延/吞吐量/丢包阈值
+│   └── change-window.yaml # Allowed change windows + blackout periods / 允许变更窗口 + 封禁区
+├── policies/              # OPA Rego policy bundles / OPA 策略包
+│   ├── network.rego       # Network change gate / 网络变更门禁
+│   ├── execution.rego     # Execution safety gate / 执行安全门禁
+│   ├── trust.rego         # Multi-dimensional trust evaluation / 多维信任评估
+│   └── limiter.rego       # Rate limiter / 速率限制
 ├── schemas/
-│   └── intent.schema.json # Strict intent JSON schema
-├── services/            # Service configs / 服务配置
-│   ├── drift-detector/  # 漂移检测
-│   ├── intent-compiler/ # Intent 编译
-│   ├── policy-gateway/  # 策略网关
-│   ├── simulator/       # 模拟器
-│   ├── executor/        # 执行器
-│   ├── verifier/        # 验证器
-│   ├── audit-recorder/  # 审计记录
-│   └── replay-engine/   # 回放引擎
-├── memory/              # Memory layer configs / 记忆层配置
-│   ├── evidence/        # Raw, append-only / 原始证据，只追加
-│   ├── episodic/        # Low-freq event summaries / 低频事件摘要
-│   ├── semantic/        # Multi-verified stable knowledge / 多次验证的稳定知识
-│   └── trust-registry.yaml # Multi-dimensional trust matrix
-├── rollback/            # Pre-built rollback templates / 预置回滚模板
-│   ├── nftables/        # NFTables ruleset restore
-│   ├── route/           # Route table restore
-│   └── dns/             # DNS zone restoration
-└── deploy/              # Deployment artifacts / 部署制品
-    ├── docker-compose.yml
-    ├── env.example
-    ├── prometheus.yml
-    └── bootstrap.sh
+│   └── intent.schema.json # Strict intent JSON schema / 严格 Intent JSON Schema
+├── services/              # Service configs / 服务配置
+│   ├── drift-detector/    # Drift detection / 漂移检测器
+│   ├── intent-compiler/   # Intent compiler / Intent 编译器
+│   ├── policy-gateway/    # Policy gateway / 策略网关
+│   ├── simulator/         # Simulator / 模拟器
+│   ├── executor/          # Sandbox executor / 沙箱执行器
+│   ├── verifier/          # Verifier / 验证器
+│   ├── audit-recorder/    # Audit recorder / 审计记录器
+│   └── replay-engine/     # Replay engine / 回放引擎
+├── memory/                # Memory layer / 记忆层
+│   ├── evidence/          # Raw evidence, append-only / 原始证据，只追加
+│   ├── episodic/          # Event summaries / 事件摘要
+│   ├── semantic/          # Stable knowledge / 稳定知识
+│   └── trust-registry.yaml # Trust matrix / 信任矩阵
+├── rollback/              # Rollback templates / 回滚模板
+│   ├── nftables/          # NFTables restore / NFTables 规则恢复
+│   ├── route/             # Route table restore / 路由表恢复
+│   └── dns/               # DNS zone restore / DNS 区域恢复
+└── deploy/                # Deployment artifacts / 部署制品
+    ├── docker-compose.yml # Container orchestration / 容器编排
+    ├── env.example        # Environment variables / 环境变量模板
+    ├── prometheus.yml     # Monitoring config / 监控配置
+    ├── bootstrap.sh       # Bootstrap script / 引导脚本
+    ├── bootstrap-daos.sh  # DAOS deploy script / DAOS 部署脚本
+    └── TASKBOOK.md        # Hermes AI task book / Hermes 任务书
 ```
 
 ---
@@ -290,7 +210,7 @@ daos-v4/
 
 - Docker + Docker Compose
 - Git
-- VPS with public IP (or local machine for development)
+- VPS with public IP (or local machine for development) / 公网 VPS（或本地开发机）
 
 ### Quick Start / 快速启动
 

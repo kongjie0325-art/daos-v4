@@ -1,35 +1,36 @@
-# episodic-store — DAOS v4 Event Summary Layer
-# Low-frequency update, session-level summaries.
+# episodic-store — DAOS v4 Event Summary Layer / 事件摘要层
+# Low-frequency update, session-level summaries. / 低频更新，会话级摘要
 
-version: "4.0.0"
+version: "4.0.0"  # Schema version / 架构版本
 
-engine: "postgres"
-table: "episodic"
-retention_days: 30
+engine: "postgres"              # Storage engine / 存储引擎
+table: "episodic"              # Table name / 表名
+retention_days: 30             # Retention period / 保留期限（天）
 
+# Schema definition / 架构定义
 schema:
   - field: "id"
-    type: "UUID PK"
-  - field: "session_id"
+    type: "UUID PK"                     # Primary key / 主键
+  - field: "session_id"                 # DAOS session ID / DAOS 会话 ID
     type: "VARCHAR(64)"
-  - field: "summary"
+  - field: "summary"                    # Session summary / 会话摘要
     type: "TEXT"
-  - field: "start_time"
+  - field: "start_time"                 # Session start / 会话开始时间
     type: "TIMESTAMPTZ"
-  - field: "end_time"
+  - field: "end_time"                   # Session end / 会话结束时间
     type: "TIMESTAMPTZ"
-  - field: "event_count"
+  - field: "event_count"                # Number of events / 事件数量
     type: "INTEGER"
-  - field: "outcome"
+  - field: "outcome"                    # Session outcome / 会话结果
     type: "VARCHAR(32)"
-  - field: "policy_version"
+  - field: "policy_version"             # OPA policy version / OPA 策略版本
     type: "VARCHAR(32)"
-  - field: "source_hash"
+  - field: "source_hash"                # Content hash / 内容哈希
     type: "VARCHAR(64)"
-  - field: "created_by"
+  - field: "created_by"                 # Creator / 创建者
     type: "VARCHAR(128)"
-  - field: "provenance"
+  - field: "provenance"                 # Provenance metadata / 出处元数据
     type: "JSONB"
 
-write_rule: "low_frequency_update"
-compression: true
+write_rule: "low_frequency_update"   # Low-frequency writes / 低频写入
+compression: true                    # Enable compression / 启用压缩
