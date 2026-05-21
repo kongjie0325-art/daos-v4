@@ -1,0 +1,31 @@
+# Secrets & Credentials
+.env
+deploy/.env
+
+# Generated runtime files
+deploy/init-db.sh
+deploy/secrets/
+
+# Data volumes
+data/
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker build artifacts
+.dockerignore

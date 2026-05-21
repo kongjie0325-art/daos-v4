@@ -59,6 +59,6 @@ trust_score_below_threshold(node) if {
 
 # Check if target network CIDR is in a valid zone | 检查目标网络 CIDR 是否在有效分区内
 valid_network_zone(network_cidr) if {
-    zone := data.baseline.nodes.network_zones[_]
+    zone := data.baseline.network_zones[_]
     net.cidr_contains(zone.cidr[_], network_cidr)
 }

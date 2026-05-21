@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# ⚠️ DEPRECATED | 已弃用 — USE deploy/bootstrap.sh + docker compose up INSTEAD
+# This script conflicts with docker-compose.yml (host vs bridge network).
 # DAOS v4 Deploy Task | 部署任务 — 交给 Hermes AI 执行
 # Usage | 用法: hermes-task run deploy-daos-v4
 set -euo pipefail
@@ -65,6 +67,7 @@ PHASE="Phase 2 — DAOS Core Services"
 echo "[$PHASE] Deploying DAOS services..."
 
 # 每个服务作为独立容器 (初始阶段用 busybox + 配置挂载占位)
+# NOTE: Placeholder containers — replace with services/*/Dockerfile after image build
 for svc in drift-detector intent-compiler policy-gateway simulator executor verifier audit-recorder; do
   mkdir -p /opt/daos/services/$svc
   docker run -d --name daos-$svc \

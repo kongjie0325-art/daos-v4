@@ -1,0 +1,77 @@
+# DAOS v4 Development Override | 开发环境覆写
+# Overrides docker-compose.yml for local development.
+# Source code mounts + hot reload + debug ports.
+# Usage: docker compose up -d
+
+services:
+  drift-detector:
+    build:
+      context: ../services/drift-detector
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/drift-detector:/app
+    ports:
+      - "9101:9101"
+
+  intent-compiler:
+    build:
+      context: ../services/intent-compiler
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/intent-compiler:/app
+    ports:
+      - "9102:9102"
+
+  policy-gateway:
+    build:
+      context: ../services/policy-gateway
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/policy-gateway:/app
+    ports:
+      - "9103:9103"
+
+  simulator:
+    build:
+      context: ../services/simulator
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/simulator:/app
+    ports:
+      - "9104:9104"
+
+  executor:
+    build:
+      context: ../services/executor
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/executor:/app
+    ports:
+      - "9105:9105"
+
+  verifier:
+    build:
+      context: ../services/verifier
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/verifier:/app
+    ports:
+      - "9106:9106"
+
+  audit-recorder:
+    build:
+      context: ../services/audit-recorder
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/audit-recorder:/app
+    ports:
+      - "9107:9107"
+
+  replay-engine:
+    build:
+      context: ../services/replay-engine
+      dockerfile: Dockerfile
+    volumes:
+      - ../services/replay-engine:/app
+    ports:
+      - "9108:9108"

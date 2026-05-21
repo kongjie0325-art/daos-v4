@@ -1,0 +1,40 @@
+name: Validate DAOS v4
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint YAML
+        run: |
+          pip install yamllint
+          yamllint -d '{extends: default, rules: {line-length: disable, comments-indentation: disable}}' .
+
+      - name: Validate OPA Policies
+        uses: snyk/actions-iopa@main
+        with:
+          args: test ./policies/
+
+      - name: Validate Docker Compose
+        run: |
+          docker compose -f deploy/docker-compose.yml config
+
+      - name: Validate JSON Schema
+        run: |
+          pip install check-jsonschema
+          check-jsonschema --schemafile schemas/intent.schema.json baseline/nodes.yaml
+
+      - name: Check Shell Syntax
+        run: |
+          bash -n deploy/bootstrap.sh
+          bash -n deploy/bootstrap-daos.sh
+          for f in rollback/nftables/rollback.sh rollback/dns/rollback.sh rollback/route/rollback.sh; do
+            bash -n "$f"
+          done
