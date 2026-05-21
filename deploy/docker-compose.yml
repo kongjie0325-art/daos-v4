@@ -86,7 +86,7 @@ services:
       - daos-net
     restart: unless-stopped
 
-  # ─── Phase 2: DAOS Core Services / DAOS 核心服务 ───
+  # ─── Phase 2: DAOS Core Services | DAOS 核心服务 ───
 
   drift-detector:  # Observation: detect drift from baseline | 观测：检测基线漂移
     image: python:3.12-slim

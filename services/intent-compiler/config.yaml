@@ -3,7 +3,7 @@
 
 version: "4.0.0"  # Schema version | 架构版本
 
-schema: "/schemas/intent.schema.json"  # Intent schema path / Intent schema 路径
+schema: "/schemas/intent.schema.json"  # Intent schema path | Intent schema 路径
 validation: "strict"                   # Validation mode: strict or relaxed | 验证模式：严格或宽松
 output_subject: "daos.intent.compiled" # NATS subject for compiled intents | 编译后 Intent 的 NATS 主题
 

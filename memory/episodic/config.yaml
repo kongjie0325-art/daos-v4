@@ -11,7 +11,7 @@ retention_days: 30             # Retention period | 保留期限（天）
 schema:
   - field: "id"
     type: "UUID PK"                     # Primary key | 主键
-  - field: "session_id"                 # DAOS session ID / DAOS 会话 ID
+  - field: "session_id"                 # DAOS session ID | DAOS 会话 ID
     type: "VARCHAR(64)"
   - field: "summary"                    # Session summary | 会话摘要
     type: "TEXT"
@@ -23,7 +23,7 @@ schema:
     type: "INTEGER"
   - field: "outcome"                    # Session outcome | 会话结果
     type: "VARCHAR(32)"
-  - field: "policy_version"             # OPA policy version / OPA 策略版本
+  - field: "policy_version"             # OPA policy version | OPA 策略版本
     type: "VARCHAR(32)"
   - field: "source_hash"                # Content hash | 内容哈希
     type: "VARCHAR(64)"

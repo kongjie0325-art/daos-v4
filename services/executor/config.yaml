@@ -13,10 +13,10 @@ runtimes:
     default_image: "alpine:3.19"     # Default sandbox image | 默认沙箱镜像
   high_risk:                         # Firecracker for nftables/route/DNS/gateway | nftables/路由/DNS/网关用 Firecracker
     type: "firecracker"
-    kernel: "/opt/firecracker/vmlinux"           # MicroVM kernel / MicroVM 内核
-    rootfs: "/opt/firecracker/rootfs.ext4"       # MicroVM rootfs / MicroVM 根文件系统
+    kernel: "/opt/firecracker/vmlinux"           # MicroVM kernel | MicroVM 内核
+    rootfs: "/opt/firecracker/rootfs.ext4"       # MicroVM rootfs | MicroVM 根文件系统
     memory_mb: 256                                # Memory limit | 内存限制（MB）
-    vcpus: 1                                      # CPU count / CPU 数量
+    vcpus: 1                                      # CPU count | CPU 数量
 
 # Safety: all mandatory | 安全：全部强制
 rollback_required: true              # Rollback must be defined | 必须定义回滚

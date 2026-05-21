@@ -25,7 +25,7 @@ schema:
     type: "INTEGER DEFAULT 0"
   - field: "confidence_floor"           # Minimum confidence | 最低置信度
     type: "FLOAT DEFAULT 0.6"
-  - field: "policy_version"             # OPA policy version / OPA 策略版本
+  - field: "policy_version"             # OPA policy version | OPA 策略版本
     type: "VARCHAR(32)"
   - field: "source_hash"                # Content hash | 内容哈希
     type: "VARCHAR(64)"

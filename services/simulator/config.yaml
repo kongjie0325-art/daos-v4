@@ -10,7 +10,7 @@ max_concurrent_simulations: 4          # Max parallel simulations | 最大并行
 
 # Verification checks | 验证检查项
 verification:
-  - "intent_passes_policy"   # Intent passes OPA policy / Intent 通过 OPA 策略
+  - "intent_passes_policy"   # Intent passes OPA policy | Intent 通过 OPA 策略
   - "rollback_validates"     # Rollback steps validate | 回滚步骤验证通过
   - "network_reachable"      # Target network reachable | 目标网络可达
   - "no_side_effects"        # No unintended side effects | 无意外副作用

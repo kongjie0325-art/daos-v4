@@ -46,7 +46,7 @@ set -e
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
     -- Enable extensions | 启用扩展
     CREATE EXTENSION IF NOT EXISTS vector;    -- Vector for embeddings | 向量嵌入
-    CREATE EXTENSION IF NOT EXISTS pgcrypto;  -- UUID generation / UUID 生成
+    CREATE EXTENSION IF NOT EXISTS pgcrypto;  -- UUID generation | UUID 生成
 
     -- Evidence table (append-only) | 证据表（仅追加）
     CREATE TABLE IF NOT EXISTS evidence (
@@ -103,7 +103,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
         reversibility FLOAT DEFAULT 0.5,        -- Reversibility score | 可逆性评分
         blast_radius FLOAT DEFAULT 0.5,         -- Damage scope | 破坏范围
         stability FLOAT DEFAULT 0.5,            -- Behavioral stability | 行为稳定性
-        hallucination_risk FLOAT DEFAULT 0.5,   -- LLM hallucination risk / LLM 幻觉风险
+        hallucination_risk FLOAT DEFAULT 0.5,   -- LLM hallucination risk | LLM 幻觉风险
         mean_time_to_recover_hours FLOAT DEFAULT 24,  -- Average recovery time | 平均恢复时间（小时）
         last_updated TIMESTAMPTZ DEFAULT NOW(),
         updated_by VARCHAR(128) DEFAULT 'daos'
@@ -118,7 +118,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
         action VARCHAR(64) NOT NULL,        -- What action | 操作类型
         outcome VARCHAR(32) NOT NULL,       -- pass/fail/rollback | 结果
         rollback_used BOOLEAN DEFAULT FALSE,
-        policy_results JSONB,               -- OPA check results / OPA 检查结果
+        policy_results JSONB,               -- OPA check results | OPA 检查结果
         prev_hash VARCHAR(64),              -- Chain hash | 链式哈希
         details JSONB
     );

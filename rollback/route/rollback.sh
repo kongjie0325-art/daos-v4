@@ -22,12 +22,12 @@ echo "[回滚] 从 $SNAPSHOT 恢复路由表"
 while IFS= read -r route; do
   ip route add $route 2>/dev/null || true  # Idempotent | 幂等操作
 done < "$SNAPSHOT"
-echo "[ROLLBACK] Route table restored / [回滚] 路由表恢复完成"
+echo "[ROLLBACK] Route table restored | [回滚] 路由表恢复完成"
 
 # Verify | 验证
 ip route show > /tmp/route_current.txt
 if diff -q /tmp/route_current.txt "$SNAPSHOT" >/dev/null 2>&1; then
-  echo "[VERIFY] Route table matches snapshot / [验证] 路由表与快照一致"
+  echo "[VERIFY] Route table matches snapshot | [验证] 路由表与快照一致"
   rm /tmp/route_current.txt
   exit 0
 else

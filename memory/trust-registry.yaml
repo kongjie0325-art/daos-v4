@@ -12,7 +12,7 @@ table: "trust_registry"    # Table name | 表名
 #   reversibility — ability to undo actions 0-1 | 操作可逆性 0-1
 #   blast_radius — potential damage scope 0-1 | 潜在破坏范围 0-1
 #   stability — behavioral consistency 0-1 | 行为一致性 0-1
-#   hallucination_risk — LLM output risk 0-1 / LLM 输出风险 0-1
+#   hallucination_risk — LLM output risk 0-1 | LLM 输出风险 0-1
 #   mean_time_to_recover_hours — average recovery time | 平均恢复时间（小时）
 schema:
   - field: "node_id"                    # Node identifier | 节点标识符
@@ -25,7 +25,7 @@ schema:
     type: "FLOAT"
   - field: "stability"                  # Behavioral consistency | 行为一致性
     type: "FLOAT"
-  - field: "hallucination_risk"         # LLM hallucination risk / LLM 幻觉风险
+  - field: "hallucination_risk"         # LLM hallucination risk | LLM 幻觉风险
     type: "FLOAT"
   - field: "mean_time_to_recover_hours" # Average recovery time (hours) | 平均恢复时间（小时）
     type: "FLOAT"

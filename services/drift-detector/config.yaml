@@ -9,14 +9,14 @@ telemetry_source: "prometheus"    # Telemetry source | 遥测源
 
 # Drift thresholds | 漂移阈值
 drift_thresholds:
-  latency_p95_deviation_pct: 20   # P95 latency deviation % / P95 时延偏差百分比
+  latency_p95_deviation_pct: 20   # P95 latency deviation % | P95 时延偏差百分比
   packet_loss_absolute: 0.5       # Absolute packet loss % | 绝对丢包百分比
   throughput_drop_pct: 30         # Throughput drop % | 吞吐量下降百分比
   node_unreachable_count: 2       # Unreachable node count | 不可达节点数
 
 # Output channels | 输出通道
 output:
-  - type: "event"        # NATS subject: daos.drift.<node> / NATS 主题
+  - type: "event"        # NATS subject: daos.drift.<node> | NATS 主题
   - type: "evidence"     # Write raw to evidence store | 写入原始证据存储
   - type: "suggestion"   # Write suggested threshold to semantic memory | 写入建议阈值到语义记忆
 

@@ -13,7 +13,7 @@ signature_hash: ""         # TODO: GPG sign after initial commit | 初始提交�
 nodes:
   - hostname: "control-01"          # Hostname | 主机名
     role: "control-plane"           # Role: control plane, execution plane, or data plane | 角色：控制平面、执行平面或数据平面
-    ipv4: "10.0.0.10"               # IPv4 address / IPv4 地址
+    ipv4: "10.0.0.10"               # IPv4 address | IPv4 地址
     region: "us-west"               # Geographic region | 地理区域
     provider: "oracle-arm"          # Cloud provider | 云提供商
     allowed_actions:                # Allowed actions | 允许的操作
@@ -28,7 +28,7 @@ nodes:
 
   - hostname: "compute-01"          # Hostname | 主机名
     role: "execution-plane"         # Execution plane: runs sandboxed tasks | 执行平面：运行沙箱任务
-    ipv4: "10.0.0.20"              # IPv4 address / IPv4 地址
+    ipv4: "10.0.0.20"              # IPv4 address | IPv4 地址
     region: "us-west"               # Geographic region | 地理区域
     provider: "oracle-arm"          # Cloud provider | 云提供商
     allowed_actions:                # Allowed actions | 允许的操作
@@ -41,7 +41,7 @@ nodes:
 
   - hostname: "storage-01"          # Hostname | 主机名
     role: "data-plane"              # Data plane: stores evidence and memory | 数据平面：存储证据和记忆
-    ipv4: "10.0.0.30"              # IPv4 address / IPv4 地址
+    ipv4: "10.0.0.30"              # IPv4 address | IPv4 地址
     region: "us-east"               # Geographic region | 地理区域
     provider: "baremetal"           # Bare metal server | 裸金属服务器
     allowed_actions:                # Allowed actions | 允许的操作
@@ -57,11 +57,11 @@ nodes:
 # 每个分区包含：名称、CIDR 范围、允许的操作
 network_zones:
   - name: "trusted"                 # Trusted zone — control plane only | 可信区 — 仅控制平面
-    cidr: ["10.0.0.0/24", "172.16.0.0/24"]  # CIDR ranges / CIDR 范围
+    cidr: ["10.0.0.0/24", "172.16.0.0/24"]  # CIDR ranges | CIDR 范围
     allow: ["observe", "simulate"]  # Allowed actions in this zone | 该分区允许的操作
   - name: "sandbox"                 # Sandbox zone — execution only | 沙箱区 — 仅执行
-    cidr: ["10.255.0.0/16"]         # CIDR range / CIDR 范围
+    cidr: ["10.255.0.0/16"]         # CIDR range | CIDR 范围
     allow: ["execute"]              # Allowed actions in this zone | 该分区允许的操作
   - name: "quarantine"              # Quarantine zone — no actions allowed | 隔离区 — 禁止所有操作
-    cidr: ["10.254.0.0/16"]         # CIDR range / CIDR 范围
+    cidr: ["10.254.0.0/16"]         # CIDR range | CIDR 范围
     allow: []                        # Empty — completely isolated | 空 — 完全隔离

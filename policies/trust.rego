@@ -1,8 +1,8 @@
-package daos.trust  # Multi-dimensional trust evaluation / 多维信任评估
+package daos.trust  # Multi-dimensional trust evaluation | 多维信任评估
 
 import future.keywords.if
 
-# Default deny / 默认拒绝
+# Default deny | 默认拒绝
 default allow = false
 
 # Allow if overall trust >= 0.7, reliability >= 0.5, hallucination_risk <= 0.3
@@ -14,7 +14,7 @@ allow if {
     eval.hallucination_risk <= 0.3
 }
 
-# Compute multi-dimensional trust score / 计算多维信任分数
+# Compute multi-dimensional trust score | 计算多维信任分数
 trust_evaluation(node) = eval if {
     trust := node.trust_matrix
     eval := {
@@ -32,7 +32,7 @@ trust_evaluation(node) = eval if {
     }
 }
 
-# Default trust for nodes without explicit matrix / 没有显式矩阵的节点的默认信任值
+# Default trust for nodes without explicit matrix | 没有显式矩阵的节点的默认信任值
 default_trust = {
     "reliability": 0.5,
     "reversibility": 0.5,
