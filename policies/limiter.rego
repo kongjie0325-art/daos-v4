@@ -18,7 +18,7 @@ deny if {
 
 # Deny: global rate exceeded | 拒绝：全局速率超限
 deny if {
-    global_rate_exceeded()
+    global_rate_exceeded
 }
 
 # Check if an actor exceeded the max rate for a specific action type
@@ -37,9 +37,8 @@ target_quarantined(node) if {
 
 # Check if global rate is exceeded across all actors | 检查全局速率是否超限
 global_rate_exceeded if {
-    all_actions := [a | a = data.runtime.actor_actions[_][_][_]]
-    recent := [t | some t in all_actions; time.now_ns() - t < 600000000000]
-    count(recent) >= data.baseline.change_window.default_max_concurrent_changes * 5
+    data.baseline.change_window.default_max_concurrent_changes * 5 <=
+    count([ts | some ts in data.runtime.actor_actions[_][_][_]; time.now_ns() - ts < 600000000000])
 }
 
 # Max rate per action type | 各操作类型的最大速率

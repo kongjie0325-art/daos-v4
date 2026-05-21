@@ -12,7 +12,7 @@ allow if {
     action_in_allowed_set(input.action, input.target_node)
     within_change_window(time.now_ns())
     not in_blackout_period(time.now_ns())
-    not exceeds_concurrent_limit()
+    not exceeds_concurrent_limit
 }
 
 # Check if action is in the node's allowed set | 检查操作是否在节点的允许集中
