@@ -43,11 +43,12 @@ exceeds_concurrent_limit if {
 # Helper: check if now_ns is within [start_hour:min, end_hour:min] on the same day
 # 辅助函数：检查当前时间是否在同一天 [start, end] 时间段内
 time_in_range(start, end, now_ns) if {
-    now_date := time.format(now_ns, "2006-01-02")
-    start_full := concat("T", [now_date, start])
-    end_full := concat("T", [now_date, end])
-    start_ns := time.parse_rfc3339_ns(concat("", [start_full, ":00Z"]))
-    end_ns := time.parse_rfc3339_ns(concat("", [end_full, ":00Z"]))
+    clk := time.clock(now_ns)
+    now_date := sprintf("%d-%02d-%02d", [clk[0], clk[1], clk[2]])
+    start_full := sprintf("%sT%s", [now_date, start])
+    end_full := sprintf("%sT%s", [now_date, end])
+    start_ns := time.parse_rfc3339_ns(sprintf("%s:00Z", [start_full]))
+    end_ns := time.parse_rfc3339_ns(sprintf("%s:00Z", [end_full]))
     now_ns >= start_ns
     now_ns <= end_ns
 }

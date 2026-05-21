@@ -89,7 +89,7 @@ services:
   # ─── Phase 2: DAOS Core Services | DAOS 核心服务 ───
 
   drift-detector:  # Observation: detect drift from baseline | 观测：检测基线漂移
-    image: python:3.12-slim
+    build: ../services/drift-detector
     container_name: daos-drift-detector
     volumes:
       - ../services/drift-detector:/app:ro
@@ -105,7 +105,7 @@ services:
     restart: unless-stopped
 
   intent-compiler:  # Control: compile intents | 控制：编译 Intent
-    image: python:3.12-slim
+    build: ../services/intent-compiler
     container_name: daos-intent-compiler
     volumes:
       - ../services/intent-compiler:/app:ro
@@ -120,7 +120,7 @@ services:
     restart: unless-stopped
 
   policy-gateway:  # Safety: gate intents through OPA | 安全：OPA 门禁
-    image: python:3.12-slim
+    build: ../services/policy-gateway
     container_name: daos-policy-gateway
     environment:
       OPA_URL: http://opa:8181
@@ -135,7 +135,7 @@ services:
     restart: unless-stopped
 
   simulator:  # Simulation: digital twin pre-flight | 模拟：数字孪生预飞
-    image: python:3.12-slim
+    build: ../services/simulator
     container_name: daos-simulator
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -149,7 +149,7 @@ services:
     restart: unless-stopped
 
   executor:  # Execution: sandbox runner | 执行：沙箱执行器
-    image: python:3.12-slim
+    build: ../services/executor
     container_name: daos-executor
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -165,7 +165,7 @@ services:
     restart: unless-stopped
 
   verifier:  # Verification: post-execution checks | 验证：执行后多维度检查
-    image: python:3.12-slim
+    build: ../services/verifier
     container_name: daos-verifier
     environment:
       NATS_URL: nats://nats:4222
@@ -177,7 +177,7 @@ services:
     restart: unless-stopped
 
   audit-recorder:  # Audit: immutable chain of events | 审计：不可变事件链
-    image: python:3.12-slim
+    build: ../services/audit-recorder
     container_name: daos-audit-recorder
     volumes:
       - auditdata:/data
@@ -202,7 +202,7 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - promdata:/prometheus
     ports:
-      - "9092:9090"
+      - "9094:9090"
     networks:
       - daos-net
     restart: unless-stopped
@@ -216,7 +216,7 @@ services:
     volumes:
       - grafanadata:/var/lib/grafana
     ports:
-      - "3000:3000"
+      - "3002:3000"
     depends_on:
       - prometheus
     networks:
