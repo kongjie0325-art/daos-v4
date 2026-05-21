@@ -1,15 +1,15 @@
-# replay-engine — DAOS v4 Debug & Forensic Tool / 调试与取证工具
-# Replays audit chain for post-mortem analysis. / 回放审计链用于事后分析
+# replay-engine — DAOS v4 Debug & Forensic Tool | 调试与取证工具
+# Replays audit chain for post-mortem analysis. | 回放审计链用于事后分析
 
-version: "4.0.0"  # Schema version / 架构版本
+version: "4.0.0"  # Schema version | 架构版本
 
-source: "/data/audit"  # Audit log source path / 审计日志源路径
+source: "/data/audit"  # Audit log source path | 审计日志源路径
 
-# Replay modes / 回放模式
+# Replay modes | 回放模式
 replay_modes:
-  - "full": "Replay all events in order / 按顺序回放所有事件"
-  - "filtered": "Filter by intent_id, actor, action, outcome / 按 intent_id、执行者、操作、结果过滤"
-  - "timeline": "Visual timeline of events grouped by target_node / 按目标节点分组的可视化时间线"
+  - "full": "Replay all events in order | 按顺序回放所有事件"
+  - "filtered": "Filter by intent_id, actor, action, outcome | 按 intent_id、执行者、操作、结果过滤"
+  - "timeline": "Visual timeline of events grouped by target_node | 按目标节点分组的可视化时间线"
 
-output_format: "json"                # Output format / 输出格式
-max_events_per_replay: 10000         # Max events per replay / 每次回放最大事件数
+output_format: "json"                # Output format | 输出格式
+max_events_per_replay: 10000         # Max events per replay | 每次回放最大事件数

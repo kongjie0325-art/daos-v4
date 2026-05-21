@@ -1,168 +1,71 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/kongjie0325-art/daos-v4/schemas/intent.schema.json",
-  "title": "DAOS Intent / Intent 定义",
-  "description": "A compiled intent that has passed policy check and is ready for simulation/execution / 已通过策略检查、准备模拟/执行的编译后 Intent",
+  "$id": "https://daos-v4.local/schemas/intent.schema.json",
+  "title": "DAOS v4 Intent / 变更意图",
+  "description": "Schema for a network change intent in DAOS v4. Every intent is a declarative description of a desired change to the network infrastructure.",
   "type": "object",
-  "required": [
-    "id", "version", "timestamp", "actor", "action", "target_node",
-    "target_network", "risk_level", "rollback_steps", "pre_snapshot"
-  ],
+  "required": ["id", "action", "target_node", "target_network", "risk_level", "rollback_steps"],
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^intent-[a-f0-9]{16}$",
-      "description": "Unique intent identifier / 唯一 Intent 标识符"
-    },
-    "version": {
-      "type": "string",
-      "pattern": "^4\\.[0-9]+\\.[0-9]+$",
-      "description": "Schema version / 架构版本"
-    },
-    "timestamp": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Intent creation time / Intent 创建时间"
-    },
-    "actor": {
-      "type": "string",
-      "description": "LLM or agent that proposed this intent / 提出此 Intent 的 LLM 或代理"
+      "description": "Unique intent identifier (UUID) / 意图唯一标识",
+      "format": "uuid",
+      "examples": ["b7f8a3e2-1c4d-5e6f-8a9b-0c1d2e3f4a5b"]
     },
     "action": {
       "type": "string",
-      "description": "Action to perform / 要执行的操作",
-      "enum": [
-        "observe", "simulate", "execute", "modify_baseline",
-        "modify_policy", "nftables_modify", "route_modify",
-        "dns_modify", "store_evidence", "audit"
-      ]
+      "description": "Network operation to execute / 要执行的网络操作",
+      "enum": ["update_acl", "update_bgp_community", "update_ospf_cost", "update_prefix_list", "update_route_map", "shutdown_interface", "no_shutdown_interface", "update_vlan", "update_vrf", "update_nat_rule"],
+      "examples": ["update_acl"]
     },
     "target_node": {
-      "type": "string",
-      "description": "Hostname matching nodes.yaml / 匹配 nodes.yaml 的主机名"
+      "type": "object",
+      "description": "Target network device / 目标网络设备",
+      "required": ["device_id", "device_type", "vendor", "trust_score", "trust_matrix"],
+      "properties": {
+        "device_id": { "type": "string", "description": "Router/switch hostname / 设备主机名" },
+        "device_type": { "type": "string", "enum": ["router", "switch", "firewall", "load_balancer"] },
+        "vendor": { "type": "string", "enum": ["cisco", "juniper", "arista", "huawei", "mikrotik"] },
+        "trust_score": { "type": "number", "minimum": 0, "maximum": 1, "description": "Historical trust score / 历史信任分数" }
+      }
     },
     "target_network": {
       "type": "string",
-      "format": "ipv4-cidr",
-      "description": "Target CIDR / 目标 CIDR"
+      "description": "Target network in CIDR notation / 目标网络 CIDR 格式",
+      "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])$",
+      "examples": ["10.0.0.0/24"]
     },
     "risk_level": {
       "type": "string",
+      "description": "Assessed risk level / 风险评估等级",
       "enum": ["low", "medium", "high", "critical"],
-      "description": "Risk level / 风险等级"
-    },
-    "params": {
-      "type": "object",
-      "description": "Action-specific parameters / 操作特定参数"
-    },
-    "pre_snapshot": {
-      "type": "object",
-      "description": "Pre-execution snapshot for rollback / 执行前用于回滚的快照",
-      "required": ["type", "path"],
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": ["nftables", "route_table", "dns_zone", "config_file"],
-          "description": "Snapshot type / 快照类型"
-        },
-        "path": {
-          "type": "string",
-          "description": "Snapshot storage path / 快照存储路径"
-        },
-        "hash": {
-          "type": "string",
-          "description": "Snapshot hash for integrity verification / 快照完整性哈希"
-        }
-      }
+      "examples": ["medium"]
     },
     "rollback_steps": {
       "type": "array",
-      "description": "Steps to rollback this intent / 回滚此 Intent 的步骤",
-      "minItems": 1,
+      "description": "Ordered list of rollback instructions / 有序的回滚指令列表",
       "items": {
         "type": "object",
-        "required": ["type", "command"],
+        "required": ["step", "command", "expected_outcome"],
         "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["restore_snapshot", "revert_config", "restart_service", "run_command"],
-            "description": "Rollback step type / 回滚步骤类型"
-          },
-          "command": {
-            "type": "string",
-            "description": "Shell command to execute / 要执行的 shell 命令"
-          },
-          "verify_command": {
-            "type": "string",
-            "description": "Command to verify rollback success / 验证回滚成功的命令"
-          }
+          "step": { "type": "integer", "description": "Step index / 步骤序号" },
+          "command": { "type": "string", "description": "Rollback CLI command / 回滚 CLI 命令" },
+          "expected_outcome": { "type": "string", "description": "Expected success state / 预期成功状态" }
         }
-      }
+      },
+      "minItems": 1
     },
-    "verify_steps": {
-      "type": "array",
-      "description": "Metrics to verify after execution / 执行后要验证的指标",
-      "items": {
-        "type": "object",
-        "required": ["metric", "expected", "tolerance"],
-        "properties": {
-          "metric": {
-            "type": "string",
-            "description": "Metric name / 指标名称"
-          },
-          "expected": {
-            "type": ["number", "string"],
-            "description": "Expected value / 预期值"
-          },
-          "tolerance": {
-            "type": "number",
-            "description": "Acceptable tolerance / 可接受误差范围"
-          }
-        }
-      }
+    "simulation_required": {
+      "type": "boolean",
+      "description": "Whether a simulation run is mandatory / 是否必须模拟运行",
+      "default": false
     },
-    "policy_results": {
+    "change_window_override": {
       "type": "object",
-      "description": "Results from OPA policy checks / OPA 策略检查结果",
+      "description": "Optional override for the change window / 变更窗口的可选覆盖",
       "properties": {
-        "network_allowed": {
-          "type": "boolean",
-          "description": "Network policy passed / 网络策略通过"
-        },
-        "execution_allowed": {
-          "type": "boolean",
-          "description": "Execution policy passed / 执行策略通过"
-        },
-        "trust_verified": {
-          "type": "boolean",
-          "description": "Trust verification passed / 信任验证通过"
-        },
-        "rate_limited": {
-          "type": "boolean",
-          "description": "Rate limit in effect / 速率限制生效"
-        }
-      }
-    },
-    "simulation_id": {
-      "type": "string",
-      "description": "Link to simulation run if applicable / 模拟运行 ID（如适用）"
-    },
-    "provenance": {
-      "type": "object",
-      "description": "Provenance tracking fields / 来源追踪字段",
-      "properties": {
-        "source_hash": {
-          "type": "string",
-          "description": "Hash of baseline source / 基线源哈希"
-        },
-        "policy_version": {
-          "type": "string",
-          "description": "Policy version at time of check / 检查时的策略版本"
-        },
-        "created_by": {
-          "type": "string",
-          "description": "Creator identifier / 创建者标识"
-        }
+        "start_utc": { "type": "string", "pattern": "^[0-9]{2}:[0-9]{2}$", "description": "Override start time HH:MM UTC / 覆盖起始时间" },
+        "end_utc": { "type": "string", "pattern": "^[0-9]{2}:[0-9]{2}$", "description": "Override end time HH:MM UTC / 覆盖结束时间" }
       }
     }
   }

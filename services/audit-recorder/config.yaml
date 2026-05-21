@@ -1,27 +1,27 @@
-# audit-recorder — DAOS v4 Audit Plane (Black Box Recorder) / 审计层（黑匣子记录器）
-# Structured JSONL with hash chain for replay integrity. / 结构化 JSONL + 哈希链，保障回放完整性
+# audit-recorder — DAOS v4 Audit Plane (Black Box Recorder) | 审计层（黑匣子记录器）
+# Structured JSONL with hash chain for replay integrity. | 结构化 JSONL + 哈希链，保障回放完整性
 
-version: "4.0.0"  # Schema version / 架构版本
+version: "4.0.0"  # Schema version | 架构版本
 
-storage_path: "/data/audit"          # Audit log storage path / 审计日志存储路径
+storage_path: "/data/audit"          # Audit log storage path | 审计日志存储路径
 file_format: "jsonl"                 # JSON Lines format / JSON Lines 格式
-rotation_size_mb: 50                 # Rotate at 50MB / 50MB 轮转
-compression: "gzip"                  # Compression after rotation / 轮转后压缩
+rotation_size_mb: 50                 # Rotate at 50MB | 50MB 轮转
+compression: "gzip"                  # Compression after rotation | 轮转后压缩
 
-# Hash chain for tamper detection / 防篡改哈希链
+# Hash chain for tamper detection | 防篡改哈希链
 chain:
-  enabled: true                      # Enable hash chaining / 启用哈希链
-  hash_algorithm: "sha256"           # Hash algorithm / 哈希算法
-  previous_hash_field: "prev_hash"   # Field name for previous hash / 前一哈希字段名
-  store_path: "/data/audit/chain.json"  # Chain state persistence / 链状态持久化路径
+  enabled: true                      # Enable hash chaining | 启用哈希链
+  hash_algorithm: "sha256"           # Hash algorithm | 哈希算法
+  previous_hash_field: "prev_hash"   # Field name for previous hash | 前一哈希字段名
+  store_path: "/data/audit/chain.json"  # Chain state persistence | 链状态持久化路径
 
-# Required fields for every audit record / 每条审计记录必填字段
+# Required fields for every audit record | 每条审计记录必填字段
 fields_required:
   - intent_id       # Intent identifier / Intent 标识符
-  - timestamp       # Event timestamp / 事件时间戳
-  - actor           # Who performed the action / 操作执行者
-  - action          # What was done / 做了什么
-  - outcome         # pass | fail | rollback / 结果：通过、失败、回滚
-  - rollback_used   # Whether rollback was triggered / 是否触发了回滚
+  - timestamp       # Event timestamp | 事件时间戳
+  - actor           # Who performed the action | 操作执行者
+  - action          # What was done | 做了什么
+  - outcome         # pass | fail | rollback | 结果：通过、失败、回滚
+  - rollback_used   # Whether rollback was triggered | 是否触发了回滚
   - policy_results  # OPA policy check results / OPA 策略检查结果
-  - prev_hash       # Previous record hash / 前一条记录哈希
+  - prev_hash       # Previous record hash | 前一条记录哈希

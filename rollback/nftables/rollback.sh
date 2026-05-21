@@ -1,6 +1,6 @@
 #!/bin/bash
-# ROLLBACK: nftables — restore a pre-snapshot ruleset / 回滚：恢复 nftables 规则快照
-# Usage / 用法: ./rollback.sh <snapshot_path>
+# ROLLBACK: nftables — restore a pre-snapshot ruleset | 回滚：恢复 nftables 规则快照
+# Usage | 用法: ./rollback.sh <snapshot_path>
 
 set -euo pipefail
 
@@ -23,11 +23,11 @@ nft -f "$SNAPSHOT" 2>&1
 echo "[ROLLBACK] nftables restored successfully"
 echo "[回滚] nftables 恢复成功"
 
-# Verify / 验证
+# Verify | 验证
 CURRENT=$(nft list ruleset | sha256sum | cut -d' ' -f1)
 SNAPSHOT_HASH=$(sha256sum "$SNAPSHOT" | cut -d' ' -f1)
 if [ "$CURRENT" = "$SNAPSHOT_HASH" ]; then
-  echo "[VERIFY] Ruleset hash matches snapshot / 验证：规则哈希匹配"
+  echo "[VERIFY] Ruleset hash matches snapshot | 验证：规则哈希匹配"
   exit 0
 else
   echo "[VERIFY] Ruleset hash MISMATCH — manual intervention required"

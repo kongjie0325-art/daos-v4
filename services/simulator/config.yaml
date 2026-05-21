@@ -1,16 +1,16 @@
-# simulator — DAOS v4 Simulation Plane / 模拟层
-# Digital twin pre-flight validation. / 数字孪生预飞验证
+# simulator — DAOS v4 Simulation Plane | 模拟层
+# Digital twin pre-flight validation. | 数字孪生预飞验证
 
-version: "4.0.0"  # Schema version / 架构版本
+version: "4.0.0"  # Schema version | 架构版本
 
-runtime: "docker"                      # Simulation runtime / 模拟运行时
-network_isolation: true                # Isolated network / 网络隔离
-default_ttl_seconds: 300               # Max simulation lifetime / 模拟最大存活时间（秒）
-max_concurrent_simulations: 4          # Max parallel simulations / 最大并行模拟数
+runtime: "docker"                      # Simulation runtime | 模拟运行时
+network_isolation: true                # Isolated network | 网络隔离
+default_ttl_seconds: 300               # Max simulation lifetime | 模拟最大存活时间（秒）
+max_concurrent_simulations: 4          # Max parallel simulations | 最大并行模拟数
 
-# Verification checks / 验证检查项
+# Verification checks | 验证检查项
 verification:
   - "intent_passes_policy"   # Intent passes OPA policy / Intent 通过 OPA 策略
-  - "rollback_validates"     # Rollback steps validate / 回滚步骤验证通过
-  - "network_reachable"      # Target network reachable / 目标网络可达
-  - "no_side_effects"        # No unintended side effects / 无意外副作用
+  - "rollback_validates"     # Rollback steps validate | 回滚步骤验证通过
+  - "network_reachable"      # Target network reachable | 目标网络可达
+  - "no_side_effects"        # No unintended side effects | 无意外副作用

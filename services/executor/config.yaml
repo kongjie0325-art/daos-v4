@@ -1,30 +1,30 @@
-# executor — DAOS v4 Execution Plane (Sandbox Runner) / 执行平面（沙箱执行器）
+# executor — DAOS v4 Execution Plane (Sandbox Runner) | 执行平面（沙箱执行器）
 # Low-risk → Docker, High-risk → Firecracker MicroVM
 # 低风险 → Docker，高风险 → Firecracker MicroVM
 
-version: "4.0.0"  # Schema version / 架构版本
+version: "4.0.0"  # Schema version | 架构版本
 
-# Runtime configuration / 运行时配置
+# Runtime configuration | 运行时配置
 runtimes:
-  low_risk:                          # Docker for observe/diagnose/read/simulate / 观测/诊断/读取/模拟用 Docker
+  low_risk:                          # Docker for observe/diagnose/read/simulate | 观测/诊断/读取/模拟用 Docker
     type: "docker"
-    network_mode: "none"             # No network access / 无网络访问
-    read_only_rootfs: true           # Read-only filesystem / 只读文件系统
-    default_image: "alpine:3.19"     # Default sandbox image / 默认沙箱镜像
-  high_risk:                         # Firecracker for nftables/route/DNS/gateway / nftables/路由/DNS/网关用 Firecracker
+    network_mode: "none"             # No network access | 无网络访问
+    read_only_rootfs: true           # Read-only filesystem | 只读文件系统
+    default_image: "alpine:3.19"     # Default sandbox image | 默认沙箱镜像
+  high_risk:                         # Firecracker for nftables/route/DNS/gateway | nftables/路由/DNS/网关用 Firecracker
     type: "firecracker"
     kernel: "/opt/firecracker/vmlinux"           # MicroVM kernel / MicroVM 内核
     rootfs: "/opt/firecracker/rootfs.ext4"       # MicroVM rootfs / MicroVM 根文件系统
-    memory_mb: 256                                # Memory limit / 内存限制（MB）
+    memory_mb: 256                                # Memory limit | 内存限制（MB）
     vcpus: 1                                      # CPU count / CPU 数量
 
-# Safety: all mandatory / 安全：全部强制
-rollback_required: true              # Rollback must be defined / 必须定义回滚
-pre_snapshot_required: true          # Pre-snapshot must exist / 必须存在预快照
-verify_after_execution: true         # Must verify after execution / 执行后必须验证
+# Safety: all mandatory | 安全：全部强制
+rollback_required: true              # Rollback must be defined | 必须定义回滚
+pre_snapshot_required: true          # Pre-snapshot must exist | 必须存在预快照
+verify_after_execution: true         # Must verify after execution | 执行后必须验证
 
-# Lifecycle hooks / 生命周期钩子
+# Lifecycle hooks | 生命周期钩子
 hooks:
-  pre_execute: "/scripts/pre-hook.sh"       # Before execution / 执行前
-  post_execute: "/scripts/post-hook.sh"     # After execution / 执行后
-  rollback: "/scripts/rollback-hook.sh"     # On rollback / 回滚时
+  pre_execute: "/scripts/pre-hook.sh"       # Before execution | 执行前
+  post_execute: "/scripts/post-hook.sh"     # After execution | 执行后
+  rollback: "/scripts/rollback-hook.sh"     # On rollback | 回滚时

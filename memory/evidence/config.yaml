@@ -1,40 +1,40 @@
-# evidence-store — DAOS v4 Evidence Layer / 证据层
-# Raw, immutable, append-only observation records. / 原始、不可变、仅追加的观测记录
+# evidence-store — DAOS v4 Evidence Layer | 证据层
+# Raw, immutable, append-only observation records. | 原始、不可变、仅追加的观测记录
 
-version: "4.0.0"  # Schema version / 架构版本
+version: "4.0.0"  # Schema version | 架构版本
 
-engine: "postgres"              # Storage engine / 存储引擎
-table: "evidence"              # Table name / 表名
-retention_days: 90             # Retention period / 保留期限（天）
+engine: "postgres"              # Storage engine | 存储引擎
+table: "evidence"              # Table name | 表名
+retention_days: 90             # Retention period | 保留期限（天）
 
-# Schema definition / 架构定义
+# Schema definition | 架构定义
 schema:
   - field: "id"
-    type: "UUID PK"                     # Primary key / 主键
-  - field: "source"                     # Data source / 数据源
+    type: "UUID PK"                     # Primary key | 主键
+  - field: "source"                     # Data source | 数据源
     type: "VARCHAR(128)"
-  - field: "raw_artifact_path"          # Path to original data / 原始数据路径
+  - field: "raw_artifact_path"          # Path to original data | 原始数据路径
     type: "VARCHAR(512)"
-  - field: "timestamp"                  # Observation timestamp / 观测时间戳
+  - field: "timestamp"                  # Observation timestamp | 观测时间戳
     type: "TIMESTAMPTZ"
-  - field: "metric_type"                # Metric type / 指标类型
+  - field: "metric_type"                # Metric type | 指标类型
     type: "VARCHAR(64)"
-  - field: "value"                      # Metric value / 指标值
+  - field: "value"                      # Metric value | 指标值
     type: "JSONB"
-  - field: "verified_by"                # Verifier identity / 验证者标识
+  - field: "verified_by"                # Verifier identity | 验证者标识
     type: "VARCHAR(128)"
-  - field: "verification_method"        # How it was verified / 验证方法
+  - field: "verification_method"        # How it was verified | 验证方法
     type: "VARCHAR(128)"
-  - field: "retention_until"            # Retention deadline / 保留截止时间
+  - field: "retention_until"            # Retention deadline | 保留截止时间
     type: "TIMESTAMPTZ"
-  - field: "policy_version"             # OPA policy version at time / 当时 OPA 策略版本
+  - field: "policy_version"             # OPA policy version at time | 当时 OPA 策略版本
     type: "VARCHAR(32)"
-  - field: "source_hash"                # Content hash for integrity / 内容哈希（完整性）
+  - field: "source_hash"                # Content hash for integrity | 内容哈希（完整性）
     type: "VARCHAR(64)"
-  - field: "created_by"                 # Creator identity / 创建者标识
+  - field: "created_by"                 # Creator identity | 创建者标识
     type: "VARCHAR(128)"
-  - field: "provenance"                 # Provenance metadata / 出处元数据
+  - field: "provenance"                 # Provenance metadata | 出处元数据
     type: "JSONB"
 
-write_rule: "append_only"          # Write behavior / 写入规则：仅追加
-requires_verification: false       # Verification required? / 是否需要验证
+write_rule: "append_only"          # Write behavior | 写入规则：仅追加
+requires_verification: false       # Verification required? | 是否需要验证

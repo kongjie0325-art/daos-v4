@@ -1,35 +1,35 @@
-# trust-registry — DAOS v4 Multi-dimensional Trust Matrix / 多维信任矩阵
+# trust-registry — DAOS v4 Multi-dimensional Trust Matrix | 多维信任矩阵
 # ==========================================================================
 
-version: "4.0.0"  # Schema version / 架构版本
+version: "4.0.0"  # Schema version | 架构版本
 
-engine: "postgres"          # Storage engine / 存储引擎
-table: "trust_registry"    # Table name / 表名
+engine: "postgres"          # Storage engine | 存储引擎
+table: "trust_registry"    # Table name | 表名
 
-# Schema definition / 架构定义
-# Dimensions: / 维度:
-#   reliability — historical reliability 0-1 / 历史可靠性 0-1
-#   reversibility — ability to undo actions 0-1 / 操作可逆性 0-1
-#   blast_radius — potential damage scope 0-1 / 潜在破坏范围 0-1
-#   stability — behavioral consistency 0-1 / 行为一致性 0-1
+# Schema definition | 架构定义
+# Dimensions: | 维度:
+#   reliability — historical reliability 0-1 | 历史可靠性 0-1
+#   reversibility — ability to undo actions 0-1 | 操作可逆性 0-1
+#   blast_radius — potential damage scope 0-1 | 潜在破坏范围 0-1
+#   stability — behavioral consistency 0-1 | 行为一致性 0-1
 #   hallucination_risk — LLM output risk 0-1 / LLM 输出风险 0-1
-#   mean_time_to_recover_hours — average recovery time / 平均恢复时间（小时）
+#   mean_time_to_recover_hours — average recovery time | 平均恢复时间（小时）
 schema:
-  - field: "node_id"                    # Node identifier / 节点标识符
+  - field: "node_id"                    # Node identifier | 节点标识符
     type: "VARCHAR(64) PK"
-  - field: "reliability"                # Historical reliability / 历史可靠性
+  - field: "reliability"                # Historical reliability | 历史可靠性
     type: "FLOAT"
-  - field: "reversibility"              # Ability to undo actions / 操作可逆性
+  - field: "reversibility"              # Ability to undo actions | 操作可逆性
     type: "FLOAT"
-  - field: "blast_radius"               # Potential damage scope / 潜在破坏范围
+  - field: "blast_radius"               # Potential damage scope | 潜在破坏范围
     type: "FLOAT"
-  - field: "stability"                  # Behavioral consistency / 行为一致性
+  - field: "stability"                  # Behavioral consistency | 行为一致性
     type: "FLOAT"
   - field: "hallucination_risk"         # LLM hallucination risk / LLM 幻觉风险
     type: "FLOAT"
-  - field: "mean_time_to_recover_hours" # Average recovery time (hours) / 平均恢复时间（小时）
+  - field: "mean_time_to_recover_hours" # Average recovery time (hours) | 平均恢复时间（小时）
     type: "FLOAT"
-  - field: "last_updated"               # Last update timestamp / 最后更新时间
+  - field: "last_updated"               # Last update timestamp | 最后更新时间
     type: "TIMESTAMPTZ"
-  - field: "updated_by"                 # Who updated / 更新者
+  - field: "updated_by"                 # Who updated | 更新者
     type: "VARCHAR(128)"

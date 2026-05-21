@@ -1,67 +1,67 @@
-# DAOS v4 — Node Baseline / 节点基线
+# DAOS v4 — Node Baseline | 节点基线
 # ==============================================
-# Source of Truth: This file is the SINGLE source of truth for node inventory. / 真源：本文件是节点清单的唯一真源。
-# Any change MUST go through GitOps PR workflow. / 任何变更必须通过 GitOps PR 工作流。
+# Source of Truth: This file is the SINGLE source of truth for node inventory. | 真源：本文件是节点清单的唯一真源。
+# Any change MUST go through GitOps PR workflow. | 任何变更必须通过 GitOps PR 工作流。
 
-version: "4.0.0"           # Schema version / 架构版本
-signed_by: "kongjie0325-art"  # Signer / 签名人
-signature_hash: ""         # TODO: GPG sign after initial commit / 初始提交后 GPG 签名
+version: "4.0.0"           # Schema version | 架构版本
+signed_by: "kongjie0325-art"  # Signer | 签名人
+signature_hash: ""         # TODO: GPG sign after initial commit | 初始提交后 GPG 签名
 
-# Nodes / 节点清单
+# Nodes | 节点清单
 # Each node has: hostname, role, IP, region, provider, allowed/disallowed actions, trust score
 # 每个节点包含：主机名、角色、IP、区域、提供商、允许/禁止操作、信任分数
 nodes:
-  - hostname: "control-01"          # Hostname / 主机名
-    role: "control-plane"           # Role: control plane, execution plane, or data plane / 角色：控制平面、执行平面或数据平面
+  - hostname: "control-01"          # Hostname | 主机名
+    role: "control-plane"           # Role: control plane, execution plane, or data plane | 角色：控制平面、执行平面或数据平面
     ipv4: "10.0.0.10"               # IPv4 address / IPv4 地址
-    region: "us-west"               # Geographic region / 地理区域
-    provider: "oracle-arm"          # Cloud provider / 云提供商
-    allowed_actions:                # Allowed actions / 允许的操作
-      - "observe"                   # Read metrics, logs, traces / 读取指标、日志、链路
-      - "simulate"                  # Run simulations / 运行模拟
-      - "compile"                   # Compile intents / 编译 Intent
-      - "audit"                     # Read/write audit logs / 读写审计日志
-    disallowed_actions:             # Explicitly forbidden / 明确禁止的操作
-      - "nftables_modify"           # Must not modify firewall rules / 不得修改防火墙规则
-      - "route_modify"              # Must not modify routing table / 不得修改路由表
-    trust_score: 0.95               # Trust score 0-1 / 信任分数 0-1
+    region: "us-west"               # Geographic region | 地理区域
+    provider: "oracle-arm"          # Cloud provider | 云提供商
+    allowed_actions:                # Allowed actions | 允许的操作
+      - "observe"                   # Read metrics, logs, traces | 读取指标、日志、链路
+      - "simulate"                  # Run simulations | 运行模拟
+      - "compile"                   # Compile intents | 编译 Intent
+      - "audit"                     # Read/write audit logs | 读写审计日志
+    disallowed_actions:             # Explicitly forbidden | 明确禁止的操作
+      - "nftables_modify"           # Must not modify firewall rules | 不得修改防火墙规则
+      - "route_modify"              # Must not modify routing table | 不得修改路由表
+    trust_score: 0.95               # Trust score 0-1 | 信任分数 0-1
 
-  - hostname: "compute-01"          # Hostname / 主机名
-    role: "execution-plane"         # Execution plane: runs sandboxed tasks / 执行平面：运行沙箱任务
+  - hostname: "compute-01"          # Hostname | 主机名
+    role: "execution-plane"         # Execution plane: runs sandboxed tasks | 执行平面：运行沙箱任务
     ipv4: "10.0.0.20"              # IPv4 address / IPv4 地址
-    region: "us-west"               # Geographic region / 地理区域
-    provider: "oracle-arm"          # Cloud provider / 云提供商
-    allowed_actions:                # Allowed actions / 允许的操作
-      - "observe"                   # Read metrics / 读取指标
-      - "execute"                   # Execute sandboxed operations / 执行沙箱操作
-    disallowed_actions:             # Explicitly forbidden / 明确禁止的操作
-      - "baseline_modify"           # Must not modify baseline / 不得修改基线
-      - "policy_modify"             # Must not modify policies / 不得修改策略
-    trust_score: 0.85               # Trust score 0-1 / 信任分数 0-1
+    region: "us-west"               # Geographic region | 地理区域
+    provider: "oracle-arm"          # Cloud provider | 云提供商
+    allowed_actions:                # Allowed actions | 允许的操作
+      - "observe"                   # Read metrics | 读取指标
+      - "execute"                   # Execute sandboxed operations | 执行沙箱操作
+    disallowed_actions:             # Explicitly forbidden | 明确禁止的操作
+      - "baseline_modify"           # Must not modify baseline | 不得修改基线
+      - "policy_modify"             # Must not modify policies | 不得修改策略
+    trust_score: 0.85               # Trust score 0-1 | 信任分数 0-1
 
-  - hostname: "storage-01"          # Hostname / 主机名
-    role: "data-plane"              # Data plane: stores evidence and memory / 数据平面：存储证据和记忆
+  - hostname: "storage-01"          # Hostname | 主机名
+    role: "data-plane"              # Data plane: stores evidence and memory | 数据平面：存储证据和记忆
     ipv4: "10.0.0.30"              # IPv4 address / IPv4 地址
-    region: "us-east"               # Geographic region / 地理区域
-    provider: "baremetal"           # Bare metal server / 裸金属服务器
-    allowed_actions:                # Allowed actions / 允许的操作
-      - "observe"                   # Read metrics / 读取指标
-      - "store_evidence"            # Append evidence records / 追加证据记录
-    disallowed_actions:             # Explicitly forbidden / 明确禁止的操作
-      - "execute"                   # Must not execute network changes / 不得执行网络变更
-      - "modify_baseline"           # Must not modify baseline / 不得修改基线
-    trust_score: 0.90               # Trust score 0-1 / 信任分数 0-1
+    region: "us-east"               # Geographic region | 地理区域
+    provider: "baremetal"           # Bare metal server | 裸金属服务器
+    allowed_actions:                # Allowed actions | 允许的操作
+      - "observe"                   # Read metrics | 读取指标
+      - "store_evidence"            # Append evidence records | 追加证据记录
+    disallowed_actions:             # Explicitly forbidden | 明确禁止的操作
+      - "execute"                   # Must not execute network changes | 不得执行网络变更
+      - "modify_baseline"           # Must not modify baseline | 不得修改基线
+    trust_score: 0.90               # Trust score 0-1 | 信任分数 0-1
 
-# Network Zones / 网络分区
+# Network Zones | 网络分区
 # Each zone has: name, CIDR ranges, allowed actions
 # 每个分区包含：名称、CIDR 范围、允许的操作
 network_zones:
-  - name: "trusted"                 # Trusted zone — control plane only / 可信区 — 仅控制平面
+  - name: "trusted"                 # Trusted zone — control plane only | 可信区 — 仅控制平面
     cidr: ["10.0.0.0/24", "172.16.0.0/24"]  # CIDR ranges / CIDR 范围
-    allow: ["observe", "simulate"]  # Allowed actions in this zone / 该分区允许的操作
-  - name: "sandbox"                 # Sandbox zone — execution only / 沙箱区 — 仅执行
+    allow: ["observe", "simulate"]  # Allowed actions in this zone | 该分区允许的操作
+  - name: "sandbox"                 # Sandbox zone — execution only | 沙箱区 — 仅执行
     cidr: ["10.255.0.0/16"]         # CIDR range / CIDR 范围
-    allow: ["execute"]              # Allowed actions in this zone / 该分区允许的操作
-  - name: "quarantine"              # Quarantine zone — no actions allowed / 隔离区 — 禁止所有操作
+    allow: ["execute"]              # Allowed actions in this zone | 该分区允许的操作
+  - name: "quarantine"              # Quarantine zone — no actions allowed | 隔离区 — 禁止所有操作
     cidr: ["10.254.0.0/16"]         # CIDR range / CIDR 范围
-    allow: []                        # Empty — completely isolated / 空 — 完全隔离
+    allow: []                        # Empty — completely isolated | 空 — 完全隔离
